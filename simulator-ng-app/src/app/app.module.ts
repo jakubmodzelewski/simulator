@@ -7,7 +7,11 @@ import { NavigationComponent } from './navigation/navigation.component';
 import { HelpComponent } from './help/help.component';
 import { MainComponent } from './main/main.component';
 import { NotFoundComponent } from './not-found/not-found.component';
-import {Router, RouterModule, Routes} from "@angular/router";
+import { RouterModule, Routes} from "@angular/router";
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { SidebarComponent } from './sidebar/sidebar.component';
+import { MatSidenavModule} from "@angular/material/sidenav";
+import { FormsModule } from "@angular/forms";
 
 const appRoutes :Routes = [
   {
@@ -36,12 +40,16 @@ const appRoutes :Routes = [
     NavigationComponent,
     HelpComponent,
     MainComponent,
-    NotFoundComponent
+    NotFoundComponent,
+    SidebarComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    RouterModule.forRoot(appRoutes, {enableTracing:true}) //shows Router Events
+    RouterModule.forRoot(appRoutes, {enableTracing: true}),
+    BrowserAnimationsModule,
+    MatSidenavModule,
+    //shows Router Events
   ],
   providers: [],
   bootstrap: [AppComponent]
