@@ -1,6 +1,9 @@
 <mat-sidenav-container>
-  <mat-sidenav mode="side" [(opened)]="opened">Sidenav</mat-sidenav>
+  <mat-sidenav mode="side" [(opened)]="opened">
+    Tools
+  </mat-sidenav>
   <mat-sidenav-content>
     <button (click)="opened=!opened">Toggle</button>
+    <img class="image" src="../../../assets/images/router.png" width="100" height="70" cdkDrag cdkDragBoundary="mat-sidenav-content">
   </mat-sidenav-content>
 </mat-sidenav-container>

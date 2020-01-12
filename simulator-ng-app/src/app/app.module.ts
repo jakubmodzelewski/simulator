@@ -11,7 +11,7 @@ import { RouterModule, Routes} from "@angular/router";
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { MatSidenavModule} from "@angular/material/sidenav";
-import { FormsModule } from "@angular/forms";
+import {DragDropModule} from "@angular/cdk/drag-drop";
 
 const appRoutes :Routes = [
   {
@@ -49,6 +49,7 @@ const appRoutes :Routes = [
     RouterModule.forRoot(appRoutes, {enableTracing: true}),
     BrowserAnimationsModule,
     MatSidenavModule,
+    DragDropModule,
     //shows Router Events
   ],
   providers: [],
