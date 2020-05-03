@@ -12,11 +12,4 @@ mat-sidenav {
   width: 200px;
 }
 
-.image:hover {
-  cursor: pointer;
-}
-
-.image:active {
-  cursor: grabbing;
-}
 

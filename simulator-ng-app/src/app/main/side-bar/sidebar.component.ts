@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {CdkDragDrop, moveItemInArray, transferArrayItem} from "@angular/cdk/drag-drop";
+import {WorkspaceComponent} from "../workspace/workspace.component";
 
 @Component({
   selector: 'app-sidebar',
@@ -8,22 +9,14 @@ import {CdkDragDrop, moveItemInArray, transferArrayItem} from "@angular/cdk/drag
 })
 export class SidebarComponent implements OnInit {
 
-    opened = false;
+    workspace: WorkspaceComponent;
+
+    opened = true;
 
     constructor() { }
 
     ngOnInit() {
+      this.workspace = new WorkspaceComponent();
     }
-
-  drop(event: CdkDragDrop<string[]>) {
-    if (event.previousContainer === event.container) {
-      moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
-    } else {
-      transferArrayItem(event.previousContainer.data,
-        event.container.data,
-        event.previousIndex,
-        event.currentIndex);
-    }
-  }
 
 }
