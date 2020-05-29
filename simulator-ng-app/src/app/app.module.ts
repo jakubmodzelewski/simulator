@@ -13,6 +13,7 @@ import { SidebarComponent } from './main/side-bar/sidebar.component';
 import { MatSidenavModule} from "@angular/material/sidenav";
 import {DragDropModule} from "@angular/cdk/drag-drop";
 import {WorkspaceComponent} from "./main/workspace/workspace.component";
+import {HttpClientModule} from "@angular/common/http";
 
 const appRoutes :Routes = [
   {
@@ -52,7 +53,7 @@ const appRoutes :Routes = [
     BrowserAnimationsModule,
     MatSidenavModule,
     DragDropModule,
-    //shows Router Events
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]
