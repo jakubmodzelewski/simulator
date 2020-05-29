@@ -10,3 +10,18 @@ img:hover {
 img:active {
   cursor: grabbing;
 }
+
+mat-sidenav-container {
+  height: 100%;
+}
+
+mat-sidenav, mat-sidenav-content {
+  padding: 16px;
+  height: 700px;
+}
+
+mat-sidenav {
+  background-color: darkgrey;
+  width: 200px;
+}
+

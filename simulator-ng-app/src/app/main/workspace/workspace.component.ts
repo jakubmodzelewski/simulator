@@ -1,4 +1,4 @@
-import {Component, Inject, Injectable, Input, OnInit} from '@angular/core';
+import {Component, Inject, Injectable, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {Router} from "../model/Router";
 import {Link} from "../model/Link";
 import {Client} from "../model/Client";
@@ -13,6 +13,8 @@ import {ApiService} from "../../shared/api.service";
   providedIn: 'root'
 })
 export class WorkspaceComponent implements OnInit {
+
+  opened = true;
 
   @Input()
   routers : Router[] = [];
@@ -33,13 +35,11 @@ export class WorkspaceComponent implements OnInit {
       response => {
         router.id = response.id;
         this.routers.push(router);
-        console.log(this.routers.length);
       },
       error => {
         alert("An error occured - Cannot add new router!");
       }
     );
-    window.location.reload();
   }
 
   getAllRouters() {

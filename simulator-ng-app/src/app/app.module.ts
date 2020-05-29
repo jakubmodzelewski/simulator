@@ -9,7 +9,6 @@ import { MainComponent } from './main/main.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { RouterModule, Routes} from "@angular/router";
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { SidebarComponent } from './main/side-bar/sidebar.component';
 import { MatSidenavModule} from "@angular/material/sidenav";
 import {DragDropModule} from "@angular/cdk/drag-drop";
 import {WorkspaceComponent} from "./main/workspace/workspace.component";
@@ -43,7 +42,6 @@ const appRoutes :Routes = [
     HelpComponent,
     MainComponent,
     NotFoundComponent,
-    SidebarComponent,
     WorkspaceComponent
   ],
   imports: [

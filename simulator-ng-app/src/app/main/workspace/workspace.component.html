@@ -1,4 +1,19 @@
-<a *ngFor="let router of routers">
-  <img src="assets/images/router.png">
-</a>
+<mat-sidenav-container>
 
+  <mat-sidenav mode="side" [(opened)]="opened" position="start">
+    <button type="button"
+            class="btn btn-info"
+            (click)="addRouter()"
+            style="margin-left:12px;"><i class="fa fa-plus"></i> Router
+    </button>
+  </mat-sidenav>
+
+  <mat-sidenav mode="side" [(opened)]="opened" position="end"></mat-sidenav>
+
+  <mat-sidenav-content>
+    <a *ngFor="let router of routers">
+      <img src="assets/images/router.png">
+    </a>
+  </mat-sidenav-content>
+
+</mat-sidenav-container>
