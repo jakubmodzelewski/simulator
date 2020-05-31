@@ -1,24 +1,28 @@
 import { Injectable } from '@angular/core';
 import {HttpClient} from "@angular/common/http";
-import {Router} from "../main/model/Router";
 import {Observable} from "rxjs";
+import {Node} from "../main/model/Node";
 
 @Injectable({
   providedIn: 'root'
 })
 export class ApiService {
-  private ROUTER_URL = 'http://localhost:8080/main/router';
-  private ALL_ROUTERS_URL = 'http://localhost:8080/main/router/all';
+  private NODE_URL = 'http://localhost:8080/main/node';
+  private ALL_NODES_URL = 'http://localhost:8080/main/node/all';
 
   constructor(private httpClient : HttpClient) { }
 
-  getAllRouters() : Observable<Router[]> {
-    return this.httpClient.get<Router[]>(this.ALL_ROUTERS_URL);
+  getAllNodes() : Observable<Node[]> {
+    return this.httpClient.get<Node[]>(this.ALL_NODES_URL);
   }
 
-  //Dodaje nowy router lub uaktualnia jego stan
-  postRouter(router : Router) : Observable<Router> {
-    return this.httpClient.post<Router>(this.ROUTER_URL, router);
+  //Dodaje nowy węzeł lub uaktualnia jego stan
+  postNode(node : Node) : Observable<Node> {
+    return this.httpClient.post<Node>(this.NODE_URL, node);
+  }
+
+  resetWorkspace() {
+    return this.httpClient.delete(this.NODE_URL);
   }
 
   //TODO Obsługa ping

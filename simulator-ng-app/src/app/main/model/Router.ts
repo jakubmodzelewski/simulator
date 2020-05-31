@@ -1,5 +1,16 @@
-export class Router {
-  id:string;
+import {Node} from "./Node";
+import {Interface} from "./Interface";
 
-  constructor() {}
+export class Router implements Node {
+
+  id: string;
+
+  // interfaces: Array<Interface>;
+
+  //Koordynaty
+  x: number;
+  y: number;
+
+  constructor() {
+  }
 }

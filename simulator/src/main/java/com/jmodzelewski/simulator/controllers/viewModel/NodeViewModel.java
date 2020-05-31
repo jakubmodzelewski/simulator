@@ -5,6 +5,9 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class RouterViewModel extends NodeViewModel {
+public abstract class NodeViewModel {
+    String id = null;
 
+    int x = 0;
+    int y = 0;
 }

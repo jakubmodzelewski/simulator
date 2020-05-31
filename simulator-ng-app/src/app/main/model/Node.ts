@@ -1,5 +1,13 @@
 import {Interface} from "./Interface";
 
 export interface Node {
-  interfaces:Array<Interface>;
+
+  //Id (klucz główny do bazy danych)
+  id:string;
+
+  //Koordynaty
+  x:number;
+  y:number;
+
+  // interfaces:Array<Interface>;
 }
