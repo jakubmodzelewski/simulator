@@ -1,6 +1,7 @@
 import {Interface} from "./Interface";
+import {Router} from "./Router";
 
 export class Link {
-  interfaceA: Interface;
-  interfaceB: Interface;
+  interfaceA: Router;
+  interfaceB: Router;
 }

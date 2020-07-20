@@ -5,12 +5,10 @@ export class Router implements Node {
 
   id: string;
 
-  // interfaces: Array<Interface>;
+  name: string;
 
-  //Koordynaty
   x: number;
   y: number;
 
-  constructor() {
-  }
+  constructor() {}
 }

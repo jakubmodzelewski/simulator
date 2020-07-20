@@ -5,10 +5,6 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public abstract class NodeViewModel {
-    String id = null;
-    String name = null;
+public class ClientViewModel extends NodeViewModel {
 
-    int x = 0;
-    int y = 0;
 }

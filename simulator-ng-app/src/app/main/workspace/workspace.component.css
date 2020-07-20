@@ -1,4 +1,10 @@
-img {
+img.router {
+  width: 75px;
+  height: 75px;
+  position: absolute;
+}
+
+img.client {
   width: 50px;
   height: 50px;
   position: absolute;
@@ -22,7 +28,23 @@ mat-sidenav, mat-sidenav-content {
 }
 
 mat-sidenav {
-  background-color: darkgrey;
+  background-color: #253c52;
   width: 200px;
+}
+
+button {
+  margin-left: 5px;
+  margin-top: 5px;
+  position: center;
+  height: auto;
+  width: 160px;
+}
+
+button.right {
+  height: 100px;
+}
+
+.workspace {
+  background-color: azure;
 }
 

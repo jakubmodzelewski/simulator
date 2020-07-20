@@ -3,21 +3,67 @@
   <!--  Left side bar-->
   <mat-sidenav mode="side" [(opened)]="leftSideBarOpened" position="start">
     <button type="button"
+            class="btn btn-success"
+            ><i class="fa fa-play"></i> Start
+    </button>
+    <button type="button"
+            class="btn btn-danger"
+            ><i class="fa fa-stop"></i> Stop
+    </button>
+    <button type="button"
+            class="btn btn-warning"
+            (click)="resetWorkspace()"
+    ><i class="fa fa-repeat"></i> Reset
+    </button>
+    <button type="button"
             class="btn btn-info"
+            style="margin-top: 30px"
+            (click)="saveParameters()"
+            ><i class="fa fa-save"></i> Save
+    </button>
+    <button type="button"
+            class="btn btn-info"
+            (click)="loadSimulation()"
+    ><i class="fa fa-folder"></i> Load
+    </button>
+    <button type="button"
+            class="btn btn-info"
+            style="margin-top: 30px"
             (click)="addRouter()"
-            style="margin-left:30px;"><i class="fa fa-plus"></i> Router
+            ><i class="fa fa-plus"></i> Router
+    </button>
+    <button type="button"
+            class="btn btn-info"
+            (click)="addClient()"
+    ><i class="fa fa-plus"></i> Client
+    </button>
+    <button type="button"
+            class="btn btn-info"
+            (click)="drawingMode=!drawingMode"
+    ><i class="fa fa-plus"></i> Link
     </button>
   </mat-sidenav>
 
   <!-- Right side bar-->
-  <mat-sidenav mode="side" [(opened)]="rightSideBarOpened" position="end"></mat-sidenav>
+  <mat-sidenav mode="side" [(opened)]="rightSideBarOpened" position="end">
+    <button type="button"
+            class="btn btn-info btn-lg right"
+    ><i class="fa fa-gear"></i> Configure
+    </button>
+    <button type="button"
+            class="btn btn-danger btn-lg right"
+    ><i class="fa fa-trash"></i> Delete
+    </button>
+  </mat-sidenav>
 
   <!--  Workspace content-->
-  <mat-sidenav-content class="container">
-    <a *ngFor="let router of routers">
-      <img src="assets/images/router.png" cdkDrag (cdkDragEnded)="updateParameters($event, router)"
-           [ngStyle]="{'left': router.x + 'px', 'top': router.y + 'px'}">
-    </a>
+  <mat-sidenav-content class="workspace">
+      <a *ngFor="let router of routers">
+        <img class="router" src="assets/images/router.png" cdkDrag cdkDragBoundary=".workspace" (click)="openNodeMenu(router); addInterface()" (cdkDragEnded)="updateParameters($event, router)">
+      </a>
+      <a *ngFor="let client of clients">
+        <img class="client" src="assets/images/client.png" cdkDrag cdkDragBoundary=".workspace" (click)="openNodeMenu(client);  addInterface()" (cdkDragEnded)="updateParameters($event, client)">
+      </a>
   </mat-sidenav-content>
 
 </mat-sidenav-container>

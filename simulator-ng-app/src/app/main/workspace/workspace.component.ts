@@ -1,9 +1,8 @@
-import {Component, Inject, Injectable, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {Component, Injectable, Input, OnInit} from '@angular/core';
 import {Router} from "../model/Router";
 import {Link} from "../model/Link";
 import {Client} from "../model/Client";
 import {ApiService} from "../../shared/api.service";
-import {CdkDragEnd} from "@angular/cdk/drag-drop";
 
 @Component({
   selector: 'app-workspace',
@@ -16,7 +15,8 @@ import {CdkDragEnd} from "@angular/cdk/drag-drop";
 export class WorkspaceComponent implements OnInit {
 
   leftSideBarOpened = true;
-  rightSideBarOpened = true;
+  rightSideBarOpened = false;
+  drawingMode = false;
 
   @Input()
   routers : Router[] = [];
@@ -26,14 +26,14 @@ export class WorkspaceComponent implements OnInit {
   constructor(private apiService : ApiService) {}
 
   ngOnInit() {
-    this.getAllNodes();
+    this.getAllRouters();
+    this.getAllClients();
   }
 
   //Dodaj nowy router do pola roboczego
   addRouter() {
     let router = new Router();
-    this.apiService.postNode(router).subscribe(
-      //Przypisuje id pobrane z serwera i dodaje nowy router do listy routerów
+    this.apiService.postRouter(router).subscribe(
       response => {
         router.id = response.id;
         router.x = response.x;
@@ -46,14 +46,40 @@ export class WorkspaceComponent implements OnInit {
     );
   }
 
-  //Pobierz z serwera wszystkie node'y
-  getAllNodes() {
-    this.apiService.getAllNodes().subscribe(
+  addClient() {
+    let client = new Client();
+    this.apiService.postClient(client).subscribe(
+      response => {
+        client.id = response.id;
+        client.x = response.x;
+        client.y = response.y;
+        this.clients.push(client);
+      },
+      error => {
+        alert("An error occured - Cannot add new node!");
+      }
+    );
+  }
+
+  //Pobierz z serwera wszystkie routery'y
+  getAllRouters() {
+    this.apiService.getAllRouters().subscribe(
       response => {
         this.routers = response;
       },
       err => {
-        alert("An error occured when getting nodes from the server!")
+        alert("An error occured when getting routers from the server!")
+      }
+    );
+  }
+
+  getAllClients() {
+    this.apiService.getAllClients().subscribe(
+      response => {
+        this.clients = response;
+      },
+      err => {
+        alert("An error occured when getting clients from the server!")
       }
     );
   }
@@ -68,13 +94,15 @@ export class WorkspaceComponent implements OnInit {
     node.x = boundingClientRect.x - parentPosition.left;
     node.y = boundingClientRect.y - parentPosition.top;
 
-    this.apiService.postNode(node).subscribe(
-      response => {
-      },
-      error => {
-        alert("An error occured - Cannot update node parameters!");
-      }
-    );
+    console.log(node.x + " " + node.y)
+
+    // this.apiService.postNode(node).subscribe(
+    //   response => {
+    //   },
+    //   error => {
+    //     alert("An error occured - Cannot update node parameters!");
+    //   }
+    // );
   }
 
   getPosition(el) {
@@ -90,12 +118,24 @@ export class WorkspaceComponent implements OnInit {
 
   //Czyści całe pole robocze
   resetWorkspace() {
-    this.apiService.resetWorkspace().subscribe(
-      response => {},
-      error => {
-        alert("An error occured - Cannot reset workspace!")
-      }
-    )
+    this.apiService.resetWorkspace();
     this.routers = [];
+    this.clients = [];
   }
+
+  saveParameters() {}
+
+  loadSimulation() {}
+
+
+  openNodeMenu(node) {
+    this.rightSideBarOpened = true;
+  }
+
+  addInterface() {
+    if (this.drawingMode) {
+
+    }
+  }
+
 }
