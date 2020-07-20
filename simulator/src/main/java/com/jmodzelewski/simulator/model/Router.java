@@ -1,12 +1,10 @@
 package com.jmodzelewski.simulator.model;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 import javax.persistence.Entity;
 
-@Getter
-@Setter
+@Data
 @Entity
 public class Router extends Node {
 
