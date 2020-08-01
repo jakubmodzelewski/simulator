@@ -1,5 +1,7 @@
 package com.jmodzelewski.simulator.controllers;
 
+import com.jmodzelewski.simulator.dto.AuthenticationResponse;
+import com.jmodzelewski.simulator.dto.LoginRequest;
 import com.jmodzelewski.simulator.dto.RegisterRequest;
 import com.jmodzelewski.simulator.services.AuthenticationService;
 import lombok.AllArgsConstructor;
@@ -22,4 +24,10 @@ public class AuthenticationController {
         authenticationService.signUp(registerRequest);
         return new ResponseEntity<>("User registered succesfully!", HttpStatus.OK);
     }
+
+    @PostMapping("/login")
+    public AuthenticationResponse login(@RequestBody LoginRequest loginRequest) {
+        return authenticationService.login(loginRequest);
+    }
+
 }
