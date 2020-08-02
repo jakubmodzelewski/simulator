@@ -1,6 +1,6 @@
 package com.jmodzelewski.simulator.services;
 
-import com.jmodzelewski.simulator.controllers.dto.ClientDTO;
+import com.jmodzelewski.simulator.dto.ClientDTO;
 import com.jmodzelewski.simulator.database.ClientRepository;
 import com.jmodzelewski.simulator.model.Client;
 import lombok.AllArgsConstructor;

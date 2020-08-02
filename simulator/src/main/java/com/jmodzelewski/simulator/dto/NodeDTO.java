@@ -1,4 +1,4 @@
-package com.jmodzelewski.simulator.controllers.dto;
+package com.jmodzelewski.simulator.dto;
 
 import lombok.*;
 

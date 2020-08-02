@@ -1,32 +1,23 @@
 package com.jmodzelewski.simulator.model;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Inheritance;
-
-import static javax.persistence.GenerationType.IDENTITY;
+import java.time.Instant;
 
 @Data
+@Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
-@Inheritance
-@Builder
-public class Node {
+public class RefreshToken {
     @Id
-    @GeneratedValue(strategy = IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    int x;
-    int y;
-
-//    List<Interface> interfaces;
-//    Interface loopback;
-
+    private String token;
+    private Instant createdDate;
 }

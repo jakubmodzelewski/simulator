@@ -1,6 +1,6 @@
 package com.jmodzelewski.simulator.services;
 
-import com.jmodzelewski.simulator.controllers.dto.RouterDTO;
+import com.jmodzelewski.simulator.dto.RouterDTO;
 import com.jmodzelewski.simulator.database.RouterRepository;
 import com.jmodzelewski.simulator.model.Router;
 import lombok.AllArgsConstructor;
