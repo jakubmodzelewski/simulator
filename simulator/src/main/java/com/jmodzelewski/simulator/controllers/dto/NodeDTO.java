@@ -8,7 +8,7 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 class NodeDTO {
-    String id = null;
+    Long id = null;
     String name = null;
 
     int x = 0;

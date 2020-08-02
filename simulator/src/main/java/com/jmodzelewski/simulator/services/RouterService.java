@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,7 +27,9 @@ public class RouterService {
     public Router mapRouterDTO(RouterDTO routerDTO) {
         Router router;
         if (routerDTO.getId() != null) {
-            router =  routerRepository.findById(UUID.fromString(routerDTO.getId())).get();
+            router =  routerRepository.findById(routerDTO.getId()).orElseThrow(
+                    () -> new RuntimeException("Error: Router with id:" + routerDTO.getId() + " not found.")
+            );
             router.setX(routerDTO.getX());
             router.setY(routerDTO.getY());
 
@@ -36,7 +37,7 @@ public class RouterService {
         }
         else {
             router = new Router();
-            router.setId(UUID.randomUUID().toString());
+            router.setId(1L);
             router.setX(routerDTO.getX());
             router.setY(routerDTO.getY());
 
@@ -60,4 +61,9 @@ public class RouterService {
                 .build();
     }
 
+    public RouterDTO getRouter(Long id) {
+        Router router = routerRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Error: Router with id:" + id + " not found."));
+        return mapToDTO(router);
+    }
 }

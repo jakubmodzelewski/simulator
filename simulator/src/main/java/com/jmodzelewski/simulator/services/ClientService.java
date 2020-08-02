@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,7 +27,9 @@ public class ClientService {
     public Client mapClientDTO(ClientDTO clientDTO) {
         Client client;
         if (clientDTO.getId() != null) {
-            client =  clientRepository.findById(UUID.fromString(clientDTO.getId())).get();
+            client =  clientRepository.findById(clientDTO.getId()).orElseThrow(
+                    () -> new RuntimeException("Error: Router with id:" + clientDTO.getId() + " not found.")
+            );
             client.setX(clientDTO.getX());
             client.setY(clientDTO.getY());
 
@@ -36,7 +37,7 @@ public class ClientService {
         }
         else {
             client = new Client();
-            client.setId(UUID.randomUUID().toString());
+            client.setId(1L);
             client.setX(clientDTO.getX());
             client.setY(clientDTO.getY());
 
@@ -58,5 +59,11 @@ public class ClientService {
                 .x(client.getX())
                 .y(client.getY())
                 .build();
+    }
+
+    public ClientDTO getClient(Long id) {
+        Client client = clientRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Error: Client with id:" + id + " not found."));
+        return mapToDTO(client);
     }
 }

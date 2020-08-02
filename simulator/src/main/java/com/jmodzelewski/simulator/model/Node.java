@@ -17,7 +17,7 @@ import javax.persistence.Inheritance;
 @Builder
 public class Node {
     @Id
-    private String id;
+    private Long id;
 
     int x;
     int y;

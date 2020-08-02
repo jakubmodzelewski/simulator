@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @CrossOrigin
@@ -35,14 +34,21 @@ public class ClientController {
                 .body(clientService.save(clientDTO));
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<ClientDTO> getClient(@PathVariable Long id) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(clientService.getClient(id));
+    }
+
     @DeleteMapping
     public void deleteAll() {
         this.clientRepository.deleteAll();
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable String id) {
-        this.clientRepository.deleteById(UUID.fromString(id));
+    public void delete(@PathVariable Long id) {
+        this.clientRepository.deleteById(id);
     }
 
 }
