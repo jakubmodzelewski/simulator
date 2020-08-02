@@ -1,10 +1,13 @@
 package com.jmodzelewski.simulator.controllers;
 
-import com.jmodzelewski.simulator.ClientMapper;
-import com.jmodzelewski.simulator.RouterMapper;
-import com.jmodzelewski.simulator.controllers.viewModel.RouterViewModel;
+import com.jmodzelewski.simulator.controllers.dto.RouterDTO;
 import com.jmodzelewski.simulator.database.RouterRepository;
 import com.jmodzelewski.simulator.model.Router;
+import com.jmodzelewski.simulator.services.RouterService;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,33 +18,23 @@ import java.util.UUID;
 @RestController
 @CrossOrigin
 @RequestMapping("/main/router")
+@Slf4j
+@AllArgsConstructor
 public class RouterController {
-    private RouterRepository routerRepository;
-    private RouterMapper routerMapper;
-
-    public RouterController(RouterRepository routerRepository, RouterMapper routerMapper) {
-        this.routerRepository = routerRepository;
-        this.routerMapper = routerMapper;
-    }
+    private final RouterService routerService;
+    private final RouterRepository routerRepository;
 
     @GetMapping("/all")
-    public List<Router> all() {
-        return routerRepository.findAll();
+    public ResponseEntity<List<RouterDTO>> all() {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(routerService.getAll());
     }
 
     @PostMapping
-    public Router add(@RequestBody RouterViewModel nodeViewModel,
-                         BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            throw new ValidationException();
-        }
-
-        Router router = (Router) routerMapper.convertRouterToEntity(nodeViewModel);
-
-        //Zapis do bazy danych
-        this.routerRepository.save(router);
-
-        return router;
+    public ResponseEntity<RouterDTO> add(@RequestBody RouterDTO routerDTO) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(routerService.save(routerDTO));
     }
 
     @DeleteMapping

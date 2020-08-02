@@ -1,20 +1,23 @@
 package com.jmodzelewski.simulator.model;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
-import java.util.UUID;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @Inheritance
-public abstract class Node {
+@Builder
+public class Node {
     @Id
-    private UUID id;
+    private String id;
 
     int x;
     int y;

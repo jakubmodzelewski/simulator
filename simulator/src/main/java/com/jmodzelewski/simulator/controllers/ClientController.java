@@ -1,46 +1,38 @@
 package com.jmodzelewski.simulator.controllers;
 
-import com.jmodzelewski.simulator.ClientMapper;
-import com.jmodzelewski.simulator.controllers.viewModel.ClientViewModel;
+import com.jmodzelewski.simulator.controllers.dto.ClientDTO;
 import com.jmodzelewski.simulator.database.ClientRepository;
-import com.jmodzelewski.simulator.model.Client;
-import org.springframework.validation.BindingResult;
+import com.jmodzelewski.simulator.services.ClientService;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.ValidationException;
 import java.util.List;
 import java.util.UUID;
 
 @RestController
 @CrossOrigin
 @RequestMapping("/main/client")
+@AllArgsConstructor
+@Slf4j
 public class ClientController {
-    private ClientRepository clientRepository;
-    private ClientMapper clientMapper;
+    private final ClientRepository clientRepository;
+    private final ClientService clientService;
 
-    public ClientController(ClientRepository clientRepository, ClientMapper clientMapper) {
-        this.clientRepository = clientRepository;
-        this.clientMapper = clientMapper;
-    }
 
     @GetMapping("/all")
-    public List<Client> all() {
-        return clientRepository.findAll();
+    public ResponseEntity<List<ClientDTO>> all() {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(clientService.getAll());
     }
 
     @PostMapping
-    public Client add(@RequestBody ClientViewModel nodeViewModel,
-                      BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            throw new ValidationException();
-        }
-
-        Client client = (Client) clientMapper.convertClientToEntity(nodeViewModel);
-
-        //Zapis do bazy danych
-        this.clientRepository.save(client);
-
-        return client;
+    public ResponseEntity<ClientDTO> add(@RequestBody ClientDTO clientDTO) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(clientService.save(clientDTO));
     }
 
     @DeleteMapping

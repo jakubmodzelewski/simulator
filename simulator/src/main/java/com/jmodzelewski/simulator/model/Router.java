@@ -1,5 +1,6 @@
 package com.jmodzelewski.simulator.model;
 
+import lombok.Builder;
 import lombok.Data;
 
 import javax.persistence.Entity;
