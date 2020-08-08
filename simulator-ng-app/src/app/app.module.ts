@@ -13,6 +13,11 @@ import { MatSidenavModule} from "@angular/material/sidenav";
 import {DragDropModule} from "@angular/cdk/drag-drop";
 import {WorkspaceComponent} from "./main/workspace/workspace.component";
 import {HttpClientModule} from "@angular/common/http";
+import { SignupComponent } from './auth/signup/signup.component';
+import { LoginComponent } from './auth/login/login.component';
+import {ReactiveFormsModule} from "@angular/forms";
+import {NgxWebstorageModule} from "ngx-webstorage";
+import {ToastrModule} from "ngx-toastr";
 
 const appRoutes :Routes = [
   {
@@ -29,6 +34,14 @@ const appRoutes :Routes = [
     pathMatch:'full'
   },
   {
+    path:'signup',
+    component:SignupComponent,
+  },
+  {
+    path:'login',
+    component:LoginComponent,
+  },
+  {
     path:'**',
     component:NotFoundComponent
   }
@@ -42,7 +55,9 @@ const appRoutes :Routes = [
     HelpComponent,
     MainComponent,
     NotFoundComponent,
-    WorkspaceComponent
+    WorkspaceComponent,
+    SignupComponent,
+    LoginComponent
   ],
   imports: [
     BrowserModule,
@@ -51,7 +66,11 @@ const appRoutes :Routes = [
     BrowserAnimationsModule,
     MatSidenavModule,
     DragDropModule,
-    HttpClientModule
+    HttpClientModule,
+    ReactiveFormsModule,
+    NgxWebstorageModule.forRoot(),
+    BrowserAnimationsModule,
+    ToastrModule.forRoot()
   ],
   providers: [],
   bootstrap: [AppComponent]
