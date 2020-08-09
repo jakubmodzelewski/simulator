@@ -18,6 +18,8 @@ import { LoginComponent } from './auth/login/login.component';
 import {ReactiveFormsModule} from "@angular/forms";
 import {NgxWebstorageModule} from "ngx-webstorage";
 import {ToastrModule} from "ngx-toastr";
+import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
+import {UserProfileComponent} from "./auth/user-profle/user-profile.component";
 
 const appRoutes :Routes = [
   {
@@ -44,6 +46,10 @@ const appRoutes :Routes = [
   {
     path:'**',
     component:NotFoundComponent
+  },
+  {
+    path:'user-profile/:name',
+    component:UserProfileComponent
   }
 
 ]
@@ -57,7 +63,8 @@ const appRoutes :Routes = [
     NotFoundComponent,
     WorkspaceComponent,
     SignupComponent,
-    LoginComponent
+    LoginComponent,
+    UserProfileComponent
   ],
   imports: [
     BrowserModule,
@@ -70,7 +77,8 @@ const appRoutes :Routes = [
     ReactiveFormsModule,
     NgxWebstorageModule.forRoot(),
     BrowserAnimationsModule,
-    ToastrModule.forRoot()
+    ToastrModule.forRoot(),
+    NgbModule
   ],
   providers: [],
   bootstrap: [AppComponent]

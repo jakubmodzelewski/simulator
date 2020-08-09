@@ -5,16 +5,21 @@ import {catchError, filter, switchMap, take} from "rxjs/operators";
 import {LoginResponsePayload} from "./auth/login/login-response-payload";
 
 export class TokenInterceptor implements HttpInterceptor{
-  private isTokenRefreshing = false;
-  private refreshTokenSubject: BehaviorSubject<any> = new BehaviorSubject<any>(null);
+  isTokenRefreshing = false;
+  refreshTokenSubject: BehaviorSubject<any> = new BehaviorSubject(null);
 
-  constructor(public authService : AuthService) {}
+  constructor(public authService: AuthService) { }
 
+  intercept(req: HttpRequest<any>, next: HttpHandler):
+    Observable<HttpEvent<any>> {
 
-  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    const token =  this.authService.getJwtToken();
-    if (token) {
-      return next.handle(this.addToken(req, token)).pipe(catchError(error => {
+    if (req.url.indexOf('refresh') !== -1 || req.url.indexOf('login') !== -1) {
+      return next.handle(req);
+    }
+    const jwtToken = this.authService.getJwtToken();
+
+    if (jwtToken) {
+      return next.handle(this.addToken(req, jwtToken)).pipe(catchError(error => {
         if (error instanceof HttpErrorResponse
           && error.status === 403) {
           return this.handleAuthErrors(req, next);
@@ -24,6 +29,7 @@ export class TokenInterceptor implements HttpInterceptor{
       }));
     }
     return next.handle(req);
+
   }
 
   private handleAuthErrors(req: HttpRequest<any>, next: HttpHandler)
@@ -53,10 +59,10 @@ export class TokenInterceptor implements HttpInterceptor{
     }
   }
 
-  private addToken(req: HttpRequest<any>, token: any) {
+  addToken(req: HttpRequest<any>, jwtToken: any) {
     return req.clone({
       headers: req.headers.set('Authorization',
-        'Bearer ' + token)
+        'Bearer ' + jwtToken)
     });
   }
 }

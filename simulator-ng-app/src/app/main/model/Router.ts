@@ -1,5 +1,4 @@
 import {Node} from "./Node";
-import {Interface} from "./Interface";
 
 export class Router implements Node {
 

@@ -54,11 +54,13 @@ public class ClientService {
     }
 
     private ClientDTO mapToDTO(Client client) {
-        return (ClientDTO) ClientDTO.builder()
-                .id(client.getId())
-                .x(client.getX())
-                .y(client.getY())
-                .build();
+        ClientDTO clientDTO = new ClientDTO();
+
+        clientDTO.setId(client.getId());
+        clientDTO.setX(client.getX());
+        clientDTO.setY(client.getY());
+
+        return clientDTO;
     }
 
     public ClientDTO getClient(Long id) {

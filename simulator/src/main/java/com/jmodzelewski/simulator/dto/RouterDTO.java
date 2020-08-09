@@ -1,11 +1,8 @@
 package com.jmodzelewski.simulator.dto;
 
-import com.jmodzelewski.simulator.dto.NodeDTO;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.EqualsAndHashCode;
 
-@Getter
-@Setter
+@EqualsAndHashCode(callSuper = false)
 public class RouterDTO extends NodeDTO {
 
 }

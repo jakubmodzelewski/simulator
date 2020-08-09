@@ -54,11 +54,13 @@ public class RouterService {
     }
 
     private RouterDTO mapToDTO(Router router) {
-        return (RouterDTO) RouterDTO.builder()
-                .id(router.getId())
-                .x(router.getX())
-                .y(router.getY())
-                .build();
+        RouterDTO routerDTO = new RouterDTO();
+
+        routerDTO.setId(router.getId());
+        routerDTO.setX(router.getX());
+        routerDTO.setY(router.getY());
+
+        return routerDTO;
     }
 
     public RouterDTO getRouter(Long id) {

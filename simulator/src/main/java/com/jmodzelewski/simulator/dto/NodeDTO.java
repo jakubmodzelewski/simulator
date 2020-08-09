@@ -2,15 +2,13 @@ package com.jmodzelewski.simulator.dto;
 
 import lombok.*;
 
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 class NodeDTO {
-    Long id = null;
-    String name = null;
+    protected Long id;
 
-    int x = 0;
-    int y = 0;
+    int x;
+    int y;
 }
