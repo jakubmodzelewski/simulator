@@ -1,6 +1,4 @@
-import {Node} from "./Node";
-
-export class Router implements Node {
+export class Router {
 
   id: string;
 

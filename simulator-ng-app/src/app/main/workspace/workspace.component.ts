@@ -41,7 +41,7 @@ export class WorkspaceComponent implements OnInit {
         this.routers.push(router);
       },
       error => {
-        alert("An error occured - Cannot add new node!");
+        alert("An error occured - Cannot add new router!");
       }
     );
   }
@@ -56,7 +56,7 @@ export class WorkspaceComponent implements OnInit {
         this.clients.push(client);
       },
       error => {
-        alert("An error occured - Cannot add new node!");
+        alert("An error occured - Cannot add new client!");
       }
     );
   }

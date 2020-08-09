@@ -32,8 +32,8 @@ export class ApiService {
   }
 
   resetWorkspace() {
-    this.httpClient.delete(this.CLIENT_URL);
-    this.httpClient.delete(this.ROUTER_URL);
+    // this.httpClient.delete(this.ALL_CLIENTS_URL);
+    this.httpClient.delete(this.ALL_ROUTERS_URL);
   }
 
   //TODO Obsługa ping

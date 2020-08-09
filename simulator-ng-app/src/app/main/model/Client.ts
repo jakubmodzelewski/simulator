@@ -1,6 +1,4 @@
-import {Node} from "./Node";
-
-export class Client implements Node {
+export class Client {
   id: string;
 
   name: string;

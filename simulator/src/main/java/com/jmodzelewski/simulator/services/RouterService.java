@@ -24,6 +24,19 @@ public class RouterService {
         return routerDTO;
     }
 
+    @Transactional
+    public List<RouterDTO> getAll() {
+        return routerRepository.findAll()
+                .stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void deleteAll() {
+        routerRepository.deleteAll();
+    }
+
     public Router mapRouterDTO(RouterDTO routerDTO) {
         Router router;
         if (routerDTO.getId() != null) {
@@ -43,14 +56,6 @@ public class RouterService {
 
             return router;
         }
-    }
-
-    @Transactional
-    public List<RouterDTO> getAll() {
-         return routerRepository.findAll()
-                .stream()
-                .map(this::mapToDTO)
-                .collect(Collectors.toList());
     }
 
     private RouterDTO mapToDTO(Router router) {

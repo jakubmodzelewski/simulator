@@ -1,8 +1,15 @@
 package com.jmodzelewski.simulator.dto;
 
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
-@EqualsAndHashCode(callSuper = false)
-public class RouterDTO extends NodeDTO {
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class RouterDTO {
+    protected Long id;
+
+    int x;
+    int y;
 
 }

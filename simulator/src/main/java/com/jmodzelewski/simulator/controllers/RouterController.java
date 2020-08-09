@@ -40,9 +40,10 @@ public class RouterController {
                 .body(routerService.getRouter(id));
     }
 
-    @DeleteMapping
+    @DeleteMapping("/all")
     public void deleteAll() {
-        this.routerRepository.deleteAll();
+        System.out.println("DING");
+        routerService.deleteAll();
     }
 
     @DeleteMapping("/{id}")
