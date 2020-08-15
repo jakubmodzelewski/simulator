@@ -8,10 +8,10 @@ import {Client} from "../main/model/Client";
   providedIn: 'root'
 })
 export class ApiService {
-  private ROUTER_URL = 'http://localhost:8080/main/router';
-  private CLIENT_URL = 'http://localhost:8080/main/client';
-  private ALL_ROUTERS_URL = 'http://localhost:8080/main/router/all';
-  private ALL_CLIENTS_URL = 'http://localhost:8080/main/client/all';
+  private ROUTER_URL = 'http://localhost:8080/workspace/router';
+  private CLIENT_URL = 'http://localhost:8080/workspace/client';
+  private ALL_ROUTERS_URL = 'http://localhost:8080/workspace/router/all';
+  private ALL_CLIENTS_URL = 'http://localhost:8080/workspace/client/all';
 
   constructor(private httpClient : HttpClient) { }
 
@@ -27,13 +27,20 @@ export class ApiService {
     return this.httpClient.post<Router>(this.ROUTER_URL, router);
   }
 
+  deleteRouter(id : string) {
+    return this.httpClient.delete<Router[]>("http://localhost:8080/workspace/router" + "/" + id);
+  }
+
   postClient(client : Client) : Observable<Client> {
     return this.httpClient.post<Client>(this.CLIENT_URL, client);
   }
 
-  resetWorkspace() {
-    // this.httpClient.delete(this.ALL_CLIENTS_URL);
-    this.httpClient.delete(this.ALL_ROUTERS_URL);
+  deleteAllRouters() : Observable<Router[]> {
+     return this.httpClient.delete<Router[]>(this.ALL_ROUTERS_URL);
+  }
+
+  deleteAllClients() : Observable<Client[]> {
+    return this.httpClient.delete<Client[]>(this.ALL_CLIENTS_URL);
   }
 
   //TODO Obsługa ping

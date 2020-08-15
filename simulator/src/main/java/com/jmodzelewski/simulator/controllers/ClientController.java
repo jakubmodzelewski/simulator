@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 @CrossOrigin
-@RequestMapping("/main/client")
+@RequestMapping("/workspace/client")
 @AllArgsConstructor
 @Slf4j
 public class ClientController {

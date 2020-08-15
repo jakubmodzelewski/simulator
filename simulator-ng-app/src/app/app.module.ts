@@ -19,11 +19,11 @@ import {ReactiveFormsModule} from "@angular/forms";
 import {NgxWebstorageModule} from "ngx-webstorage";
 import {ToastrModule} from "ngx-toastr";
 import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
-import {UserProfileComponent} from "./auth/user-profle/user-profile.component";
+import {UserProfileComponent} from "./auth/user-profile/user-profile.component";
 
 const appRoutes :Routes = [
   {
-    path:'main',
+    path:'workspace',
     component:MainComponent
   },
   {
@@ -32,8 +32,12 @@ const appRoutes :Routes = [
   },
   {
     path:'',
-    component:MainComponent,
+    component:WorkspaceComponent,
     pathMatch:'full'
+  },
+  {
+    path:'user-profile/:name',
+    component:UserProfileComponent
   },
   {
     path:'signup',
@@ -46,10 +50,6 @@ const appRoutes :Routes = [
   {
     path:'**',
     component:NotFoundComponent
-  },
-  {
-    path:'user-profile/:name',
-    component:UserProfileComponent
   }
 
 ]

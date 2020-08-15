@@ -1,7 +1,15 @@
+.workspace {
+  background-color: azure;
+}
+
 img.router {
   width: 75px;
   height: 75px;
   position: absolute;
+}
+
+img.selected {
+  filter: brightness(2%);
 }
 
 img.client {
@@ -42,9 +50,5 @@ button {
 
 button.right {
   height: 100px;
-}
-
-.workspace {
-  background-color: azure;
 }
 

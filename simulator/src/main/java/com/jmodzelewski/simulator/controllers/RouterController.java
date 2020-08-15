@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 @CrossOrigin
-@RequestMapping("/main/router")
+@RequestMapping("/workspace/router")
 @Slf4j
 @AllArgsConstructor
 public class RouterController {
@@ -41,14 +41,17 @@ public class RouterController {
     }
 
     @DeleteMapping("/all")
-    public void deleteAll() {
-        System.out.println("DING");
-        routerService.deleteAll();
+    public ResponseEntity<List<RouterDTO>> deleteAll() {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(routerService.deleteAll());
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
-        this.routerRepository.deleteById(id);
+    public ResponseEntity<List<RouterDTO>> delete(@PathVariable Long id) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(routerService.deleteById(id));
     }
 
 }

@@ -1,4 +1,4 @@
-import {Component, Injectable, Input, OnInit} from '@angular/core';
+import {AfterContentChecked, AfterViewChecked, Component, Injectable, Input, OnInit} from '@angular/core';
 import {Router} from "../model/Router";
 import {Link} from "../model/Link";
 import {Client} from "../model/Client";
@@ -17,8 +17,8 @@ export class WorkspaceComponent implements OnInit {
   leftSideBarOpened = true;
   rightSideBarOpened = false;
   drawingMode = false;
+  loading = false;
 
-  @Input()
   routers : Router[] = [];
   links : Link[] = [];
   clients: Client[] = [];
@@ -26,6 +26,7 @@ export class WorkspaceComponent implements OnInit {
   constructor(private apiService : ApiService) {}
 
   ngOnInit() {
+    this.loading = true;
     this.getAllRouters();
     this.getAllClients();
   }
@@ -36,8 +37,10 @@ export class WorkspaceComponent implements OnInit {
     this.apiService.postRouter(router).subscribe(
       response => {
         router.id = response.id;
-        router.x = response.x;
-        router.y = response.y;
+        router.actualX = response.actualX;
+        router.actualY = response.actualY;
+        router.previousX = response.previousX;
+        router.previousY = response.previousY;
         this.routers.push(router);
       },
       error => {
@@ -46,20 +49,20 @@ export class WorkspaceComponent implements OnInit {
     );
   }
 
-  addClient() {
-    let client = new Client();
-    this.apiService.postClient(client).subscribe(
-      response => {
-        client.id = response.id;
-        client.x = response.x;
-        client.y = response.y;
-        this.clients.push(client);
-      },
-      error => {
-        alert("An error occured - Cannot add new client!");
-      }
-    );
-  }
+  // addClient() {
+  //   let client = new Client();
+  //   this.apiService.postClient(client).subscribe(
+  //     response => {
+  //       client.id = response.id;
+  //       client.x = response.x;
+  //       client.y = response.y;
+  //       this.clients.push(client);
+  //     },
+  //     error => {
+  //       alert("An error occured - Cannot add new client!");
+  //     }
+  //   );
+  // }
 
   //Pobierz z serwera wszystkie routery'y
   getAllRouters() {
@@ -84,25 +87,26 @@ export class WorkspaceComponent implements OnInit {
     );
   }
 
-  //Po każdym kliknięciu na node uaktualniamy jego pozycję
-  //i wysyłamy do repozytorium
-  updateParameters(event, node) {
+  //Po każdym przeciągnięciu node'a uaktualniamy
+  //jego pozycję i wysyłamy do bazy
+  updateParameters(event, router) {
     let element = event.source.getRootElement();
     let boundingClientRect = element.getBoundingClientRect();
     let parentPosition = this.getPosition(element);
 
-    node.x = boundingClientRect.x - parentPosition.left;
-    node.y = boundingClientRect.y - parentPosition.top;
+    router.previousX += router.actualX == undefined ? 0 : router.actualX;
+    router.previousY += router.actualY == undefined ? 0 : router.actualY;
 
-    console.log(node.x + " " + node.y)
+    router.actualX = boundingClientRect.x - parentPosition.left;
+    router.actualY = boundingClientRect.y - parentPosition.top;
 
-    // this.apiService.postNode(node).subscribe(
-    //   response => {
-    //   },
-    //   error => {
-    //     alert("An error occured - Cannot update node parameters!");
-    //   }
-    // );
+    this.apiService.postRouter(router).subscribe(
+      response => {
+      },
+      error => {
+        alert("An error occured - Cannot update node parameters!");
+      }
+    );
   }
 
   getPosition(el) {
@@ -118,9 +122,23 @@ export class WorkspaceComponent implements OnInit {
 
   //Czyści całe pole robocze
   resetWorkspace() {
-    this.apiService.resetWorkspace();
-    this.routers = [];
-    this.clients = [];
+    this.apiService.deleteAllRouters().subscribe(
+      response => {
+        this.routers = response;
+      },
+      error => {
+        alert("An error occured during workspace reset")
+      }
+    );
+
+    // this.apiService.deleteAllClients().subscribe(
+    //   response => {
+    //     this.clients = response;
+    //   },
+    //   error => {
+    //     alert("An error occured during workspace reset")
+    //   }
+    // );
   }
 
   saveParameters() {}
@@ -138,4 +156,24 @@ export class WorkspaceComponent implements OnInit {
     }
   }
 
+  select(id: string) {
+    for (let router of this.routers) {
+      router.selected = router.id == id;
+    }
+  }
+
+  removeSelectedRouter() {
+    for(let router of this.routers) {
+      if (router.selected) {
+        this.apiService.deleteRouter(router.id).subscribe(
+          response => {
+            this.routers = response;
+          },
+          error => {
+            alert("An error occured during removing router")
+          }
+        );
+      }
+    }
+  }
 }

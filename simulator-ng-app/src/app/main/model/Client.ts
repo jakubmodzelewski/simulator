@@ -1,5 +1,6 @@
 export class Client {
   id: string;
+  selected: boolean;
 
   name: string;
 

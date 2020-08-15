@@ -9,7 +9,9 @@ import lombok.*;
 public class RouterDTO {
     protected Long id;
 
-    int x;
-    int y;
+    int actualX;
+    int actualY;
+    int previousX;
+    int previousY;
 
 }

@@ -37,7 +37,7 @@ public class ClientService {
         }
         else {
             client = new Client();
-            client.setId(1L);
+            client.setId(clientDTO.getId());
             client.setX(clientDTO.getX());
             client.setY(clientDTO.getY());
 

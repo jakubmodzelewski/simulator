@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,8 +34,9 @@ public class RouterService {
     }
 
     @Transactional
-    public void deleteAll() {
+    public List<RouterDTO> deleteAll() {
         routerRepository.deleteAll();
+        return new LinkedList<RouterDTO>();
     }
 
     public Router mapRouterDTO(RouterDTO routerDTO) {
@@ -43,16 +45,20 @@ public class RouterService {
             router =  routerRepository.findById(routerDTO.getId()).orElseThrow(
                     () -> new RuntimeException("Error: Router with id:" + routerDTO.getId() + " not found.")
             );
-            router.setX(routerDTO.getX());
-            router.setY(routerDTO.getY());
+            router.setActualX(routerDTO.getActualX());
+            router.setActualY(routerDTO.getActualY());
+            router.setPreviousX(routerDTO.getPreviousX());
+            router.setPreviousY(routerDTO.getPreviousY());
 
             return router;
         }
         else {
             router = new Router();
-            router.setId(1L);
-            router.setX(routerDTO.getX());
-            router.setY(routerDTO.getY());
+            router.setId(routerDTO.getId());
+            router.setActualX(routerDTO.getActualX());
+            router.setActualY(routerDTO.getActualY());
+            router.setPreviousX(routerDTO.getPreviousX());
+            router.setPreviousY(routerDTO.getPreviousY());
 
             return router;
         }
@@ -62,8 +68,10 @@ public class RouterService {
         RouterDTO routerDTO = new RouterDTO();
 
         routerDTO.setId(router.getId());
-        routerDTO.setX(router.getX());
-        routerDTO.setY(router.getY());
+        routerDTO.setActualX(router.getActualX());
+        routerDTO.setActualY(router.getActualY());
+        routerDTO.setPreviousX(router.getPreviousX());
+        routerDTO.setPreviousY(router.getPreviousY());
 
         return routerDTO;
     }
@@ -72,5 +80,10 @@ public class RouterService {
         Router router = routerRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Error: Router with id:" + id + " not found."));
         return mapToDTO(router);
+    }
+
+    public List<RouterDTO> deleteById(Long id) {
+        routerRepository.deleteById(id);
+        return getAll();
     }
 }

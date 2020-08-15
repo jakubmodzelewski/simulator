@@ -19,6 +19,8 @@ public class Router {
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
-    int x;
-    int y;
+    int actualX;
+    int actualY;
+    int previousX;
+    int previousY;
 }
