@@ -1,11 +1,28 @@
 package com.jmodzelewski.simulator.model;
 
-public class Link {
-    private Interface interfaceA;
-    private Interface interfaceB;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-    public Link(String interfaceA, String interfaceB) {
-        this.interfaceA = new Interface(interfaceA);
-        this.interfaceB = new Interface(interfaceB);
-    }
+import javax.persistence.*;
+
+import static javax.persistence.FetchType.LAZY;
+import static javax.persistence.GenerationType.IDENTITY;
+
+@Data
+@Entity
+@AllArgsConstructor
+@NoArgsConstructor
+public class Link {
+    @Id
+    @GeneratedValue(strategy = IDENTITY)
+    private Long id;
+
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "id", referencedColumnName = "id", insertable=false, updatable=false)
+    private Node interfaceA;
+
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "id", referencedColumnName = "id", insertable=false, updatable=false)
+    private Node interfaceB;
 }

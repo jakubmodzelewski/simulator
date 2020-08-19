@@ -1,7 +1,6 @@
-import {AfterContentChecked, AfterViewChecked, Component, Injectable, Input, OnInit} from '@angular/core';
-import {Router} from "../model/Router";
+import {Component, Injectable, OnInit} from '@angular/core';
+import {Node} from "../model/Node";
 import {Link} from "../model/Link";
-import {Client} from "../model/Client";
 import {ApiService} from "../../shared/api.service";
 
 @Component({
@@ -19,88 +18,111 @@ export class WorkspaceComponent implements OnInit {
   drawingMode = false;
   loading = false;
 
-  routers : Router[] = [];
+  nodes : Node[] = [];
   links : Link[] = [];
-  clients: Client[] = [];
+
+  lastCreatedInterface = null;
 
   constructor(private apiService : ApiService) {}
 
   ngOnInit() {
     this.loading = true;
-    this.getAllRouters();
-    this.getAllClients();
+    this.getAllNodes();
+    this.getAllLinks();
   }
 
-  //Dodaj nowy router do pola roboczego
-  addRouter() {
-    let router = new Router();
-    this.apiService.postRouter(router).subscribe(
+  //Dodaj nowy węzeł do pola roboczego
+  addNode() {
+    let node = new Node();
+    this.apiService.postNode(node).subscribe(
       response => {
-        router.id = response.id;
-        router.actualX = response.actualX;
-        router.actualY = response.actualY;
-        router.previousX = response.previousX;
-        router.previousY = response.previousY;
-        this.routers.push(router);
+        node.id = response.id;
+        node.actualX = response.actualX;
+        node.actualY = response.actualY;
+        node.previousX = response.previousX;
+        node.previousY = response.previousY;
+        node.name = response.name;
+        this.nodes.push(node);
       },
       error => {
-        alert("An error occured - Cannot add new router!");
+        alert("An error occured - Cannot add new node!");
       }
     );
   }
 
-  // addClient() {
-  //   let client = new Client();
-  //   this.apiService.postClient(client).subscribe(
-  //     response => {
-  //       client.id = response.id;
-  //       client.x = response.x;
-  //       client.y = response.y;
-  //       this.clients.push(client);
-  //     },
-  //     error => {
-  //       alert("An error occured - Cannot add new client!");
-  //     }
-  //   );
-  // }
+  addInterface(node : Node) {
+    node.addInterface();
 
-  //Pobierz z serwera wszystkie routery'y
-  getAllRouters() {
-    this.apiService.getAllRouters().subscribe(
+
+    this.apiService.postNode(node).subscribe(
       response => {
-        this.routers = response;
       },
-      err => {
-        alert("An error occured when getting routers from the server!")
+      error => {
+        alert("An error occured - Cannot update node parameters!");
+      }
+    );
+
+    if (this.lastCreatedInterface == null) {
+      this.lastCreatedInterface = node;
+    } else {
+      this.addLink(node);
+      this.lastCreatedInterface = null;
+    }
+  }
+
+  addLink(node : Node) {
+    let link = new Link(this.lastCreatedInterface, node);
+
+    this.apiService.postLink(link).subscribe(
+      response => {
+        link.id = response.id;
+        link.interfaceA = response.interfaceA;
+        link.interfaceB = response.interfaceB;
+        this.links.push(link);
+      },
+      error => {
+        alert("An error occured - Cannot add new link!");
       }
     );
   }
 
-  getAllClients() {
-    this.apiService.getAllClients().subscribe(
+  //Pobierz z serwera wszystkie węzły
+  getAllNodes() {
+    this.apiService.getAllNodes().subscribe(
       response => {
-        this.clients = response;
+        this.nodes = response;
       },
       err => {
-        alert("An error occured when getting clients from the server!")
+        alert("An error occured when getting nodes from the server!")
+      }
+    );
+  }
+
+  private getAllLinks() {
+    this.apiService.getAllLinks().subscribe(
+      response => {
+        this.links = response;
+      },
+      err => {
+        alert("An error occured when getting links from the server!")
       }
     );
   }
 
   //Po każdym przeciągnięciu node'a uaktualniamy
   //jego pozycję i wysyłamy do bazy
-  updateParameters(event, router) {
+  updateParameters(event, node) {
     let element = event.source.getRootElement();
     let boundingClientRect = element.getBoundingClientRect();
     let parentPosition = this.getPosition(element);
 
-    router.previousX += router.actualX == undefined ? 0 : router.actualX;
-    router.previousY += router.actualY == undefined ? 0 : router.actualY;
+    node.previousX += node.actualX == undefined ? 0 : node.actualX;
+    node.previousY += node.actualY == undefined ? 0 : node.actualY;
 
-    router.actualX = boundingClientRect.x - parentPosition.left;
-    router.actualY = boundingClientRect.y - parentPosition.top;
+    node.actualX = boundingClientRect.x - parentPosition.left;
+    node.actualY = boundingClientRect.y - parentPosition.top;
 
-    this.apiService.postRouter(router).subscribe(
+    this.apiService.postNode(node).subscribe(
       response => {
       },
       error => {
@@ -109,36 +131,16 @@ export class WorkspaceComponent implements OnInit {
     );
   }
 
-  getPosition(el) {
-    let x = 0;
-    let y = 0;
-    while(el && !isNaN(el.offsetLeft) && !isNaN(el.offsetTop)) {
-      x += el.offsetLeft - el.scrollLeft;
-      y += el.offsetTop - el.scrollTop;
-      el = el.offsetParent;
-    }
-    return { top: y, left: x };
-  }
-
   //Czyści całe pole robocze
   resetWorkspace() {
-    this.apiService.deleteAllRouters().subscribe(
+    this.apiService.deleteAllNodes().subscribe(
       response => {
-        this.routers = response;
+        this.nodes = response;
       },
       error => {
         alert("An error occured during workspace reset")
       }
     );
-
-    // this.apiService.deleteAllClients().subscribe(
-    //   response => {
-    //     this.clients = response;
-    //   },
-    //   error => {
-    //     alert("An error occured during workspace reset")
-    //   }
-    // );
   }
 
   saveParameters() {}
@@ -150,30 +152,49 @@ export class WorkspaceComponent implements OnInit {
     this.rightSideBarOpened = true;
   }
 
-  addInterface() {
-    if (this.drawingMode) {
-
-    }
-  }
-
-  select(id: string) {
-    for (let router of this.routers) {
-      router.selected = router.id == id;
-    }
-  }
-
-  removeSelectedRouter() {
-    for(let router of this.routers) {
-      if (router.selected) {
-        this.apiService.deleteRouter(router.id).subscribe(
+  removeSelectedNode() {
+    for(let node of this.nodes) {
+      if (node.selected) {
+        this.apiService.deleteNode(node.id).subscribe(
           response => {
-            this.routers = response;
+            this.nodes = response;
           },
           error => {
-            alert("An error occured during removing router")
+            alert("An error occured during removing node")
           }
         );
       }
     }
+  }
+
+  private drawLinks() {
+    for (let link of this.links) {
+      var c =  <HTMLCanvasElement> document.getElementById("myCanvas");
+      var ctx = c.getContext("2d");
+
+      ctx.beginPath();
+      ctx.lineWidth=1;
+      ctx.strokeStyle="gray";
+      ctx.moveTo(link.interfaceA.actualX,link.interfaceA.actualY);
+      ctx.lineTo(link.interfaceB.actualX,link.interfaceB.actualY);
+      ctx.stroke();
+    }
+  }
+
+  select(id: string) {
+    for (let node of this.nodes) {
+      node.selected = node.id == id;
+    }
+  }
+
+  getPosition(el) {
+    let x = 0;
+    let y = 0;
+    while(el && !isNaN(el.offsetLeft) && !isNaN(el.offsetTop)) {
+      x += el.offsetLeft - el.scrollLeft;
+      y += el.offsetTop - el.scrollTop;
+      el = el.offsetParent;
+    }
+    return { top: y, left: x };
   }
 }

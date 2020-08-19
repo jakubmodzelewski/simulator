@@ -29,12 +29,11 @@
     <button type="button"
             class="btn btn-info"
             style="margin-top: 30px"
-            (click)="addRouter()"
+            (click)="addNode()"
             ><i class="fa fa-plus"></i> Router
     </button>
     <button type="button"
             class="btn btn-info"
-            (click)="addClient()"
     ><i class="fa fa-plus"></i> Client
     </button>
     <button type="button"
@@ -52,30 +51,33 @@
     </button>
     <button type="button"
             class="btn btn-danger btn-lg right"
-            (click)="removeSelectedRouter()"
+            (click)="removeSelectedNode()"
     ><i class="fa fa-trash"></i> Delete
     </button>
   </mat-sidenav>
 
   <!--  Workspace content-->
   <mat-sidenav-content class="workspace" (click)="loading=false;">
-      <a *ngFor="let router of routers">
-        <img [ngClass]="{selected: router.selected}"
-             class="router"
-             src="assets/images/router.png"
-             cdkDrag cdkDragBoundary=".workspace"
-             (click)="openNodeMenu(router); addInterface(); select(router.id)"
-             (cdkDragEnded)="updateParameters($event, router)"
-             [style.left.px]="loading ? router.actualX + router.previousX : {}" [style.top.px]="loading ? router.actualY + router.previousY : {}"
-        >
-      </a>
-<!--      <a *ngFor="let client of clients">-->
-<!--        <img class="client"-->
-<!--             src="assets/images/client.png"-->
-<!--             cdkDrag cdkDragBoundary=".workspace"-->
-<!--             (click)="openNodeMenu(client);  addInterface(); client.selected = true"-->
-<!--             (cdkDragEnded)="updateParameters($event, client)">-->
+<!--    <svg>-->
+<!--      <a *ngFor="let link of links">-->
+<!--        <line x1="{{link.interfaceA.actualX}}" y1="{{link.interfaceA.actualY}}" x2="{{link.interfaceB.actualX}}" y2="{{link.interfaceB.actualY}}"-->
+<!--              style="stroke:rgb(255,0,0);stroke-width:2" />-->
 <!--      </a>-->
+<!--    </svg>-->
+    <a *ngFor="let node of nodes">
+      <img [ngClass]="{selected: node.selected}"
+           class="node"
+           src="assets/images/router.png"
+           cdkDrag cdkDragBoundary=".workspace"
+           (click)="openNodeMenu(node);
+           select(node.id);
+           drawingMode ? addInterface(node) : {}"
+           (cdkDragEnded)="updateParameters($event, node)"
+           [style.left.px]="loading ? node.actualX + node.previousX : {}" [style.top.px]="loading ? node.actualY + node.previousY : {}">
+    </a>
+    <!--    TODO: Dostosować rozmiar do mat-sidenav-content-->
+    <canvas id="myCanvas"  width="650" height="650"></canvas>
+
   </mat-sidenav-content>
 
 </mat-sidenav-container>

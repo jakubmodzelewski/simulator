@@ -4,9 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.List;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
@@ -14,11 +13,19 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-public class Client {
+public class Node {
     @Id
     @GeneratedValue(strategy = IDENTITY)
-    private Long id;
+    Long id;
+    String name;
+    NodeType type;
 
-    int x;
-    int y;
+    @ElementCollection
+    @CollectionTable(name = "interfaces")
+    List<String> interfaces;
+
+    int actualX;
+    int actualY;
+    int previousX;
+    int previousY;
 }
