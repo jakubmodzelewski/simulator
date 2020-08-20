@@ -29,11 +29,12 @@
     <button type="button"
             class="btn btn-info"
             style="margin-top: 30px"
-            (click)="addNode()"
+            (click)="addNode(0)"
             ><i class="fa fa-plus"></i> Router
     </button>
     <button type="button"
             class="btn btn-info"
+            (click)="addNode(1)"
     ><i class="fa fa-plus"></i> Client
     </button>
     <button type="button"
@@ -66,8 +67,9 @@
 <!--    </svg>-->
     <a *ngFor="let node of nodes">
       <img [ngClass]="{selected: node.selected}"
+           [ngClass]="{'drawing-mode': drawingMode}"
            class="node"
-           src="assets/images/router.png"
+           [src]="node.type == 0 ? 'assets/images/router.png' : 'assets/images/client.png'"
            cdkDrag cdkDragBoundary=".workspace"
            (click)="openNodeMenu(node);
            select(node.id);

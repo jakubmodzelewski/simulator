@@ -1,3 +1,5 @@
+import {NodeType} from "./node-type.enum";
+
 export class Node {
 
   id: string;
@@ -6,6 +8,7 @@ export class Node {
   interfaces: string[];
 
   selected = false;
+  type : NodeType;
 
   //Coordinates
   previousX = 0;

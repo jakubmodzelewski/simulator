@@ -2,6 +2,7 @@ import {Component, Injectable, OnInit} from '@angular/core';
 import {Node} from "../model/Node";
 import {Link} from "../model/Link";
 import {ApiService} from "../../shared/api.service";
+import {NodeType} from "../model/node-type.enum";
 
 @Component({
   selector: 'app-workspace',
@@ -13,7 +14,7 @@ import {ApiService} from "../../shared/api.service";
 })
 export class WorkspaceComponent implements OnInit {
 
-  leftSideBarOpened = true;
+leftSideBarOpened = true;
   rightSideBarOpened = false;
   drawingMode = false;
   loading = false;
@@ -32,8 +33,9 @@ export class WorkspaceComponent implements OnInit {
   }
 
   //Dodaj nowy węzeł do pola roboczego
-  addNode() {
+  addNode(nodeType : NodeType) {
     let node = new Node();
+    node.type = nodeType == NodeType.ROUTER ? NodeType.ROUTER : NodeType.CLIENT;
     this.apiService.postNode(node).subscribe(
       response => {
         node.id = response.id;
@@ -78,7 +80,9 @@ export class WorkspaceComponent implements OnInit {
         link.id = response.id;
         link.interfaceA = response.interfaceA;
         link.interfaceB = response.interfaceB;
+
         this.links.push(link);
+
       },
       error => {
         alert("An error occured - Cannot add new link!");
@@ -102,6 +106,7 @@ export class WorkspaceComponent implements OnInit {
     this.apiService.getAllLinks().subscribe(
       response => {
         this.links = response;
+        this.drawLinks();
       },
       err => {
         alert("An error occured when getting links from the server!")
@@ -173,8 +178,8 @@ export class WorkspaceComponent implements OnInit {
       var ctx = c.getContext("2d");
 
       ctx.beginPath();
-      ctx.lineWidth=1;
-      ctx.strokeStyle="gray";
+      ctx.lineWidth=2;
+      ctx.strokeStyle="black";
       ctx.moveTo(link.interfaceA.actualX,link.interfaceA.actualY);
       ctx.lineTo(link.interfaceB.actualX,link.interfaceB.actualY);
       ctx.stroke();

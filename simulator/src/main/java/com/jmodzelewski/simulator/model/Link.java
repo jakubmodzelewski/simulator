@@ -19,10 +19,8 @@ public class Link {
     private Long id;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "id", referencedColumnName = "id", insertable=false, updatable=false)
     private Node interfaceA;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "id", referencedColumnName = "id", insertable=false, updatable=false)
     private Node interfaceB;
 }

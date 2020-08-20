@@ -12,6 +12,10 @@ img.selected {
   filter: brightness(2%);
 }
 
+img.drawing-mode {
+  border: 2px darkgreen solid;
+}
+
 img:hover {
   cursor: pointer;
 }

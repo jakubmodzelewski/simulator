@@ -44,7 +44,7 @@ public class NodeService {
     @Transactional
     public List<NodeDTO> deleteAll() {
         nodeRepository.deleteAll();
-        return new LinkedList<NodeDTO>();
+        return new LinkedList<>();
     }
 
     @Transactional
