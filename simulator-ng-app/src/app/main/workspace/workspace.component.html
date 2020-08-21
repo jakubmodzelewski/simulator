@@ -29,12 +29,12 @@
     <button type="button"
             class="btn btn-info"
             style="margin-top: 30px"
-            (click)="addNode(0)"
+            (click)="addNode('ROUTER')"
             ><i class="fa fa-plus"></i> Router
     </button>
     <button type="button"
             class="btn btn-info"
-            (click)="addNode(1)"
+            (click)="addNode('CLIENT')"
     ><i class="fa fa-plus"></i> Client
     </button>
     <button type="button"
@@ -59,21 +59,12 @@
 
   <!--  Workspace content-->
   <mat-sidenav-content class="workspace" (click)="loading=false;">
-<!--    <svg>-->
-<!--      <a *ngFor="let link of links">-->
-<!--        <line x1="{{link.interfaceA.actualX}}" y1="{{link.interfaceA.actualY}}" x2="{{link.interfaceB.actualX}}" y2="{{link.interfaceB.actualY}}"-->
-<!--              style="stroke:rgb(255,0,0);stroke-width:2" />-->
-<!--      </a>-->
-<!--    </svg>-->
     <a *ngFor="let node of nodes">
-      <img [ngClass]="{selected: node.selected}"
-           [ngClass]="{'drawing-mode': drawingMode}"
+      <img [ngClass]="{'selected': node.selected, 'drawing-mode': drawingMode}"
            class="node"
-           [src]="node.type == 0 ? 'assets/images/router.png' : 'assets/images/client.png'"
+           [src]=getImageSource(node.type)
            cdkDrag cdkDragBoundary=".workspace"
-           (click)="openNodeMenu(node);
-           select(node.id);
-           drawingMode ? addInterface(node) : {}"
+           (click)="openNodeMenu(node); select(node.id); drawingMode ? addInterface(node) : {}"
            (cdkDragEnded)="updateParameters($event, node)"
            [style.left.px]="loading ? node.actualX + node.previousX : {}" [style.top.px]="loading ? node.actualY + node.previousY : {}">
     </a>

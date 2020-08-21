@@ -33,7 +33,7 @@ leftSideBarOpened = true;
   }
 
   //Dodaj nowy węzeł do pola roboczego
-  addNode(nodeType : NodeType) {
+  addNode(nodeType : string) {
     let node = new Node();
     node.type = nodeType == NodeType.ROUTER ? NodeType.ROUTER : NodeType.CLIENT;
     this.apiService.postNode(node).subscribe(
@@ -180,8 +180,8 @@ leftSideBarOpened = true;
       ctx.beginPath();
       ctx.lineWidth=2;
       ctx.strokeStyle="black";
-      ctx.moveTo(link.interfaceA.actualX,link.interfaceA.actualY);
-      ctx.lineTo(link.interfaceB.actualX,link.interfaceB.actualY);
+      ctx.moveTo(link.interfaceA.actualX + link.interfaceA.previousX,link.interfaceA.actualY + link.interfaceA.previousY);
+      ctx.lineTo(link.interfaceB.actualX + link.interfaceB.previousX,link.interfaceB.actualY + link.interfaceB.previousY);
       ctx.stroke();
     }
   }
@@ -201,5 +201,17 @@ leftSideBarOpened = true;
       el = el.offsetParent;
     }
     return { top: y, left: x };
+  }
+
+  //Decyzja którą ikonę wyświetlać w zależności od typu węzła
+  getImageSource(nodeType: NodeType) : string {
+    switch (nodeType) {
+      case NodeType.ROUTER:
+        return 'assets/images/router.png';
+      case NodeType.CLIENT:
+        return 'assets/images/client.png';
+      default:
+        return '';
+    }
   }
 }

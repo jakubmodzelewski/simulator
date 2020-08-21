@@ -9,7 +9,7 @@ img.node {
 }
 
 img.selected {
-  filter: brightness(2%);
+  filter: brightness(50%);
 }
 
 img.drawing-mode {

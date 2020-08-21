@@ -1,3 +1,4 @@
 export enum NodeType {
-  ROUTER, CLIENT
+  ROUTER = "ROUTER",
+  CLIENT = "CLIENT"
 }
