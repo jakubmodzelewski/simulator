@@ -14,7 +14,7 @@ import {NodeType} from "../model/node-type.enum";
 })
 export class WorkspaceComponent implements OnInit {
 
-leftSideBarOpened = true;
+  leftSideBarOpened = true;
   rightSideBarOpened = false;
   drawingMode = false;
   loading = false;
@@ -23,6 +23,10 @@ leftSideBarOpened = true;
   links : Link[] = [];
 
   lastCreatedInterface = null;
+
+  HALF_IMAGE_LENGTH = 17.5;
+  ROUTER_RADIUS = this.HALF_IMAGE_LENGTH * 1.41; // promień ikony routera
+  CLIENT_RADIUS = this.ROUTER_RADIUS * 2; // promień ikony klienta
 
   constructor(private apiService : ApiService) {}
 
@@ -153,7 +157,7 @@ leftSideBarOpened = true;
   loadSimulation() {}
 
 
-  openNodeMenu(node) {
+  openNodeMenu() {
     this.rightSideBarOpened = true;
   }
 
@@ -179,9 +183,17 @@ leftSideBarOpened = true;
 
       ctx.beginPath();
       ctx.lineWidth=2;
-      ctx.strokeStyle="black";
-      ctx.moveTo(link.interfaceA.actualX + link.interfaceA.previousX,link.interfaceA.actualY + link.interfaceA.previousY);
-      ctx.lineTo(link.interfaceB.actualX + link.interfaceB.previousX,link.interfaceB.actualY + link.interfaceB.previousY);
+      ctx.strokeStyle="gray";
+
+      let x1, y1, x2, y2;
+      [x1, y1, x2, y2] = this.calculateLinkDrawpoint(
+        link.interfaceA.actualX + link.interfaceA.previousX + this.HALF_IMAGE_LENGTH,
+        link.interfaceA.actualY + link.interfaceA.previousY + this.HALF_IMAGE_LENGTH,
+        link.interfaceB.actualX + link.interfaceB.previousX + this.HALF_IMAGE_LENGTH,
+        link.interfaceB.actualY + link.interfaceB.previousY + this.HALF_IMAGE_LENGTH,
+        link.interfaceA.type, link.interfaceB.type);
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
       ctx.stroke();
     }
   }
@@ -212,6 +224,50 @@ leftSideBarOpened = true;
         return 'assets/images/client.png';
       default:
         return '';
+    }
+  }
+
+  //Wykonuje obliczenia niezbędne do prawidłowego
+  //rysowania połączeń między węzłami
+  calculateLinkDrawpoint(x1 : number, y1 : number, x2 : number, y2 : number, type1 : NodeType, type2 : NodeType) {
+    let xDiff = Math.abs(x1 - x2);
+    let yDiff = Math.abs(y1 - y2);
+    let multiplier = xDiff / yDiff;
+
+    if (multiplier > 1) {
+      if (x1 > x2 && y1 > y2) {
+        return [x1 - this.getRadius(type1), y1 - (this.getRadius(type1) * (1/multiplier)), x2 + this.getRadius(type2), y2 + (this.getRadius(type2) * (1/multiplier))];
+      } else if (x1 > x2 && y1 < y2) {
+        return [x1 - this.getRadius(type1), y1 + (this.getRadius(type1) * (1/multiplier)), x2 + this.getRadius(type2), y2 - (this.getRadius(type2) * (1/multiplier))];
+      } else if (x1 < x2 && y1 > y2) {
+        return [x1 + this.getRadius(type1), y1 - (this.getRadius(type1) * (1/multiplier)), x2 - this.getRadius(type2), y2 + (this.getRadius(type2) * (1/multiplier))];
+      } else if (x1 < x2 && y1 < y2) {
+        return [x1 + this.getRadius(type1), y1 + (this.getRadius(type1) * (1/multiplier)), x2 - this.getRadius(type2), y2 - (this.getRadius(type2) * (1/multiplier))];
+      } else {
+        return [x1, y1, x2, y2];
+      }
+    } else {
+      if (x1 > x2 && y1 > y2) {
+        return [x1 - (this.getRadius(type1) * multiplier), y1 - this.getRadius(type1), x2 + (this.getRadius(type2) * multiplier), y2 + this.getRadius(type2)];
+      } else if (x1 > x2 && y1 < y2) {
+        return [x1 - (this.getRadius(type1) * multiplier), y1 + this.getRadius(type1), x2 + (this.getRadius(type2) * multiplier), y2 - this.getRadius(type2)];
+      } else if (x1 < x2 && y1 > y2) {
+        return [x1 + (this.getRadius(type1) * multiplier), y1 - this.getRadius(type1), x2 - (this.getRadius(type2) * multiplier), y2 + this.getRadius(type2)];
+      } else if (x1 < x2 && y1 < y2) {
+        return [x1 + (this.getRadius(type1) * multiplier), y1 + this.getRadius(type1), x2 - (this.getRadius(type2) * multiplier), y2 - this.getRadius(type2)];
+      } else {
+        return [x1, y1, x2, y2];
+      }
+    }
+  }
+
+  getRadius(nodeType : NodeType) {
+    switch (nodeType) {
+      case NodeType.ROUTER:
+        return this.ROUTER_RADIUS;
+      case NodeType.CLIENT:
+      default:
+        return this.CLIENT_RADIUS;
     }
   }
 }
