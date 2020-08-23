@@ -39,13 +39,7 @@ export class ApiService {
      return this.httpClient.delete<Node[]>(this.ALL_NODES_URL);
   }
 
-  //TODO Obsługa ping
-
-  // pingRequest() {
-  //   this.http.get(SIMULATION_URL).subscribe(); {
-  //     result => {
-  //
-  //     };
-  //   }
-  // }
+  deleteAllLinks() : Observable<Link[]> {
+    return this.httpClient.delete<Link[]>(this.ALL_LINKS_URL);
+  }
 }

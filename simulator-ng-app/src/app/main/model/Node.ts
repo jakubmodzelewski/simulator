@@ -22,16 +22,4 @@ export class Node {
     this.interfaces = [];
     this.routingTable = new Map<string, string>();
   }
-
-  public addInterface() {
-    this.interfaces.push(this.id + "." + this.interfaces.length);
-  }
-
-  getRoutingTableAsPairTable() {
-    let table = [];
-    for(let pair of this.routingTable) {
-      table.push(pair[0], pair[1]);
-    }
-    return table;
-  }
 }

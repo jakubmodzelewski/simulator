@@ -61,8 +61,7 @@ export class WorkspaceComponent implements OnInit {
   }
 
   addInterface(node : Node) {
-    node.addInterface();
-
+    node.interfaces.push(node.id + "." + node.interfaces.length);
 
     this.apiService.postNode(node).subscribe(
       response => {
@@ -90,7 +89,7 @@ export class WorkspaceComponent implements OnInit {
         link.interfaceB = response.interfaceB;
 
         this.links.push(link);
-
+        this.drawLinks()
       },
       error => {
         alert("An error occured - Cannot add new link!");
@@ -146,9 +145,18 @@ export class WorkspaceComponent implements OnInit {
 
   //Czyści całe pole robocze
   resetWorkspace() {
-    this.apiService.deleteAllNodes().subscribe(
+    this.apiService.deleteAllLinks().subscribe(
       response => {
-        this.nodes = response;
+        this.links = response;
+        this.clearLinks();
+        this.apiService.deleteAllNodes().subscribe(
+          response => {
+            this.nodes = response;
+          },
+          error => {
+            alert("An error occured during workspace reset")
+          }
+        );
       },
       error => {
         alert("An error occured during workspace reset")
@@ -200,6 +208,12 @@ export class WorkspaceComponent implements OnInit {
       ctx.lineTo(x2, y2);
       ctx.stroke();
     }
+  }
+
+  clearLinks() {
+    var c =  <HTMLCanvasElement> document.getElementById("myCanvas");
+    var ctx = c.getContext("2d");
+    ctx.clearRect(0, 0, c.width, c.height);
   }
 
   select(id: string) {
@@ -281,5 +295,12 @@ export class WorkspaceComponent implements OnInit {
         node.selected = false;
       }
     }
+  }
+
+  getRoutingTableAsPairTable(routingTable : Map<string, string>) {
+    let table = [];
+    routingTable = new Map<string, string>();
+    routingTable.forEach(pair => table.push(pair[0], pair[1]));
+    return table;
   }
 }
