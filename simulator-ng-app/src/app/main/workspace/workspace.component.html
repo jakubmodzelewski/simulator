@@ -1,14 +1,14 @@
 <mat-sidenav-container>
 
   <!--  Left side bar-->
-  <mat-sidenav mode="side" [(opened)]="leftSideBarOpened" position="start">
+  <mat-sidenav mode="side" [(opened)]="leftSideBarOpened" position="start" (click)="unselect();">
     <button type="button"
             class="btn btn-success"
-            ><i class="fa fa-play"></i> Start
+    ><i class="fa fa-play"></i> Start
     </button>
     <button type="button"
             class="btn btn-danger"
-            ><i class="fa fa-stop"></i> Stop
+    ><i class="fa fa-stop"></i> Stop
     </button>
     <button type="button"
             class="btn btn-warning"
@@ -19,7 +19,7 @@
             class="btn btn-info"
             style="margin-top: 30px"
             (click)="saveParameters()"
-            ><i class="fa fa-save"></i> Save
+    ><i class="fa fa-save"></i> Save
     </button>
     <button type="button"
             class="btn btn-info"
@@ -30,7 +30,7 @@
             class="btn btn-info"
             style="margin-top: 30px"
             (click)="addNode('ROUTER')"
-            ><i class="fa fa-plus"></i> Router
+    ><i class="fa fa-plus"></i> Router
     </button>
     <button type="button"
             class="btn btn-info"
@@ -45,7 +45,11 @@
   </mat-sidenav>
 
   <!-- Right side bar-->
-  <mat-sidenav mode="side" [(opened)]="rightSideBarOpened" position="end">
+  <mat-sidenav mode="side" [(opened)]="rightSideBarOpened" position="end" (click)="unselect();">
+    <button type="button"
+            class="btn btn-success btn-lg right"
+    ><i class="fa fa-angle-double-right"></i> Ping
+    </button>
     <button type="button"
             class="btn btn-info btn-lg right"
     ><i class="fa fa-gear"></i> Configure
@@ -58,19 +62,84 @@
   </mat-sidenav>
 
   <!--  Workspace content-->
-  <mat-sidenav-content class="workspace" (click)="loading=false;">
-    <a *ngFor="let node of nodes">
-      <img [ngClass]="{'selected': node.selected, 'drawing-mode': drawingMode}"
-           class="node"
-           [src]=getImageSource(node.type)
-           cdkDrag cdkDragBoundary=".workspace"
-           (click)="openNodeMenu(); select(node.id); drawingMode ? addInterface(node) : {}"
-           (cdkDragEnded)="updateParameters($event, node)"
-           [style.left.px]="loading ? node.actualX + node.previousX : {}" [style.top.px]="loading ? node.actualY + node.previousY : {}">
-    </a>
-    <!--    TODO: Dostosować rozmiar do mat-sidenav-content-->
-    <canvas id="myCanvas"  width="650" height="650"></canvas>
+  <mat-sidenav-content style="background-color: azure">
+    <div class="workspace" (click)="loading=false;">
+      <a *ngFor="let node of nodes">
+        <img [ngClass]="{'selected': node.selected, 'drawing-mode': drawingMode}"
+             class="node"
+             [src]=getImageSource(node.type)
+             cdkDrag cdkDragBoundary=".workspace"
+             (click)="openNodeMenu(); select(node.id); drawingMode ? addInterface(node) : {}"
+             (cdkDragEnded)="updateParameters($event, node)"
+             [style.left.px]="loading ? node.actualX + node.previousX : {}"
+             [style.top.px]="loading ? node.actualY + node.previousY : {}">
+      </a>
+      <!--    TODO: Dostosować rozmiar do mat-sidenav-content-->
+      <canvas id="myCanvas" width="650" height="650" (click)="unselect(); rightSideBarOpened=false;"></canvas>
+    </div>
 
+    <mat-tab-group id="bottom-bar">
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon>article</mat-icon>
+          Console
+        </ng-template>
+        Content 1
+      </mat-tab>
+
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon>view_list</mat-icon>
+          Node parameters
+        </ng-template>
+
+        <table mat-table [dataSource]="nodes" class="mat-elevation-z8">
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef> Name</th>
+            <td mat-cell *matCellDef="let node"> {{node.name}} </td>
+          </ng-container>
+          <ng-container matColumnDef="type">
+            <th mat-header-cell *matHeaderCellDef> Type</th>
+            <td mat-cell *matCellDef="let node"> {{node.type}} </td>
+          </ng-container>
+          <ng-container matColumnDef="loopback">
+            <th mat-header-cell *matHeaderCellDef> Loopback</th>
+            <td mat-cell *matCellDef="let node"> {{node.loopback}} </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="nodeParametersColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: nodeParametersColumns;"></tr>
+        </table>
+
+      </mat-tab>
+
+      <mat-tab>
+        <a *ngFor="let node of nodes">
+          <a *ngIf="node.selected">
+            <ng-template mat-tab-label>
+
+              <img class="mat-icon" [src]=getImageSource(node.type)/>
+              {{node.name}}
+
+
+            </ng-template>
+            <table mat-table [dataSource]="node.getRoutingTableAsPairTable()" class="mat-elevation-z8">
+              <ng-container matColumnDef="network">
+                <th mat-header-cell *matHeaderCellDef> Network</th>
+                <td mat-cell *matCellDef="let routingTable"> {{routingTable}} </td>
+              </ng-container>
+              <ng-container matColumnDef="next-hop">
+                <th mat-header-cell *matHeaderCellDef> Next Hop</th>
+                <td mat-cell *matCellDef="let routingTable"> {{routingTable}} </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="routingTableColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: routingTableColumns;"></tr>
+            </table>
+          </a>
+        </a>
+      </mat-tab>
+    </mat-tab-group>
   </mat-sidenav-content>
 
 </mat-sidenav-container>

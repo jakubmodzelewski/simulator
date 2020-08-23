@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Map;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
@@ -18,11 +19,17 @@ public class Node {
     @GeneratedValue(strategy = IDENTITY)
     Long id;
     String name;
+    String loopback;
+
     NodeType type;
 
     @ElementCollection
     @CollectionTable(name = "interfaces")
     List<String> interfaces;
+
+    @ElementCollection
+    @CollectionTable(name = "routingTable")
+    Map<String, String> routingTable;
 
     int actualX;
     int actualY;

@@ -20,6 +20,9 @@ import {NgxWebstorageModule} from "ngx-webstorage";
 import {ToastrModule} from "ngx-toastr";
 import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {UserProfileComponent} from "./auth/user-profile/user-profile.component";
+import {MatTabsModule} from "@angular/material/tabs";
+import {MatIconModule} from "@angular/material/icon";
+import {MatTableModule} from "@angular/material/table";
 
 const appRoutes :Routes = [
   {
@@ -78,7 +81,10 @@ const appRoutes :Routes = [
     NgxWebstorageModule.forRoot(),
     BrowserAnimationsModule,
     ToastrModule.forRoot(),
-    NgbModule
+    NgbModule,
+    MatTabsModule,
+    MatIconModule,
+    MatTableModule
   ],
   providers: [],
   bootstrap: [AppComponent]

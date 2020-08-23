@@ -4,6 +4,7 @@ import com.jmodzelewski.simulator.model.NodeType;
 import lombok.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Data
 @AllArgsConstructor
@@ -12,9 +13,12 @@ import java.util.List;
 public class NodeDTO {
     Long id;
     String name;
+    String loopback;
+
     NodeType type;
 
     List<String> interfaces;
+    Map<String, String> routingTable;
 
     //Koordynaty na polu roboczym
     int actualX;

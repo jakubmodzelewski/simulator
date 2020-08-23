@@ -28,6 +28,9 @@ export class WorkspaceComponent implements OnInit {
   ROUTER_RADIUS = this.HALF_IMAGE_LENGTH * 1.41; // promień ikony routera
   CLIENT_RADIUS = this.ROUTER_RADIUS * 2; // promień ikony klienta
 
+  nodeParametersColumns: string[] = ['name', 'type', 'loopback'];
+  routingTableColumns: string[] = ['network', 'next-hop'];
+
   constructor(private apiService : ApiService) {}
 
   ngOnInit() {
@@ -43,11 +46,12 @@ export class WorkspaceComponent implements OnInit {
     this.apiService.postNode(node).subscribe(
       response => {
         node.id = response.id;
+        node.name = response.name;
+        node.loopback = response.loopback;
         node.actualX = response.actualX;
         node.actualY = response.actualY;
         node.previousX = response.previousX;
         node.previousY = response.previousY;
-        node.name = response.name;
         this.nodes.push(node);
       },
       error => {
@@ -268,6 +272,14 @@ export class WorkspaceComponent implements OnInit {
       case NodeType.CLIENT:
       default:
         return this.CLIENT_RADIUS;
+    }
+  }
+
+  unselect() {
+    for (let node of this.nodes) {
+      if (node.selected) {
+        node.selected = false;
+      }
     }
   }
 }
