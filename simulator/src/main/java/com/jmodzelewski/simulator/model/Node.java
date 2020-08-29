@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -25,11 +26,14 @@ public class Node {
 
     @ElementCollection
     @CollectionTable(name = "interfaces")
+    @Column(name = "interface")
     List<String> interfaces;
 
     @ElementCollection
-    @CollectionTable(name = "routingTable")
-    Map<String, String> routingTable;
+    @CollectionTable(name = "routing_table")
+    @MapKeyColumn (name="network")
+    @Column(name="next_hop")
+    Map<String, String> routingTable = new HashMap<>();
 
     int actualX;
     int actualY;

@@ -117,20 +117,32 @@
         <a *ngFor="let node of nodes">
           <a *ngIf="node.selected">
             <ng-template mat-tab-label>
-
               <img class="mat-icon" [src]=getImageSource(node.type)/>
               {{node.name}}
-
-
             </ng-template>
-            <table mat-table [dataSource]="getRoutingTableAsPairTable(node.routingTable)" class="mat-elevation-z8">
+
+            <form [formGroup]="newRowForm" (ngSubmit)="addRow(node)">
+              <mat-form-field class="input">
+                <input [formControlName]="'network'" type="text" matInput  placeholder="Network">
+              </mat-form-field>
+              <mat-form-field class="input">
+                <input [formControlName]="'next_hop'" type="text" matInput  placeholder="Next Hop">
+              </mat-form-field>
+              <button type="submit" class="btn btn-success small-plus"><i class="fa fa-plus"></i></button>
+            </form>
+
+            <table mat-table [dataSource]="getRoutingTableAsPairTable(node)" class="mat-elevation-z8">
               <ng-container matColumnDef="network">
                 <th mat-header-cell *matHeaderCellDef> Network</th>
-                <td mat-cell *matCellDef="let routingTable"> {{routingTable}} </td>
+                <td mat-cell *matCellDef="let routingTable">
+                  {{routingTable.network}}
+                </td>
               </ng-container>
               <ng-container matColumnDef="next-hop">
                 <th mat-header-cell *matHeaderCellDef> Next Hop</th>
-                <td mat-cell *matCellDef="let routingTable"> {{routingTable}} </td>
+                <td mat-cell *matCellDef="let routingTable">
+                  {{routingTable.next_hop}}
+                </td>
               </ng-container>
 
               <tr mat-header-row *matHeaderRowDef="routingTableColumns"></tr>

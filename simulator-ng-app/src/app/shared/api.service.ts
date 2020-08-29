@@ -27,6 +27,10 @@ export class ApiService {
     return this.httpClient.post<Node>(this.NODE_URL, node);
   }
 
+  postRoutingTableRow(id: string, row: {}) : Observable<Node> {
+    return this.httpClient.post<Node>(this.NODE_URL + "/rows/" + id, row);
+  }
+
   deleteNode(id : string) {
     return this.httpClient.delete<Node[]>("http://localhost:8080/workspace/node/" + id);
   }

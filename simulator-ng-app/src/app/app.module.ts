@@ -15,7 +15,7 @@ import {WorkspaceComponent} from "./main/workspace/workspace.component";
 import {HttpClientModule} from "@angular/common/http";
 import { SignupComponent } from './auth/signup/signup.component';
 import { LoginComponent } from './auth/login/login.component';
-import {ReactiveFormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgxWebstorageModule} from "ngx-webstorage";
 import {ToastrModule} from "ngx-toastr";
 import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
@@ -23,6 +23,8 @@ import {UserProfileComponent} from "./auth/user-profile/user-profile.component";
 import {MatTabsModule} from "@angular/material/tabs";
 import {MatIconModule} from "@angular/material/icon";
 import {MatTableModule} from "@angular/material/table";
+import {MatInputModule} from "@angular/material/input";
+import {MatButtonModule} from "@angular/material/button";
 
 const appRoutes :Routes = [
   {
@@ -84,7 +86,10 @@ const appRoutes :Routes = [
     NgbModule,
     MatTabsModule,
     MatIconModule,
-    MatTableModule
+    MatTableModule,
+    MatInputModule,
+    FormsModule,
+    MatButtonModule
   ],
   providers: [],
   bootstrap: [AppComponent]

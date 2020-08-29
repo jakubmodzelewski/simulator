@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @CrossOrigin
@@ -32,6 +33,12 @@ public class NodeController {
     public ResponseEntity<NodeDTO> add(@RequestBody NodeDTO nodeDTO) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(nodeService.save(nodeDTO));
+    }
+
+    @PostMapping("/rows/{id}")
+    public ResponseEntity<NodeDTO> addRow(@PathVariable Long id, @RequestBody Map<String, String> rows) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(nodeService.addRoutingTableRow(id, rows));
     }
 
     @GetMapping("/{id}")

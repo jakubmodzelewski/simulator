@@ -3,6 +3,7 @@ import {Node} from "../model/Node";
 import {Link} from "../model/Link";
 import {ApiService} from "../../shared/api.service";
 import {NodeType} from "../model/node-type.enum";
+import {FormControl, FormGroup, Validators} from "@angular/forms";
 
 @Component({
   selector: 'app-workspace',
@@ -14,6 +15,7 @@ import {NodeType} from "../model/node-type.enum";
 })
 export class WorkspaceComponent implements OnInit {
 
+  //Flagi sterujące
   leftSideBarOpened = true;
   rightSideBarOpened = false;
   drawingMode = false;
@@ -24,16 +26,27 @@ export class WorkspaceComponent implements OnInit {
 
   lastCreatedInterface = null;
 
+  //Stałe do rysowania
   HALF_IMAGE_LENGTH = 17.5;
   ROUTER_RADIUS = this.HALF_IMAGE_LENGTH * 1.41; // promień ikony routera
   CLIENT_RADIUS = this.ROUTER_RADIUS * 2; // promień ikony klienta
 
+  //Kolumny tabel z parametrami
   nodeParametersColumns: string[] = ['name', 'type', 'loopback'];
   routingTableColumns: string[] = ['network', 'next-hop'];
+
+  newRowForm: FormGroup;
+
+  clientInterfacesCounter = 1;
 
   constructor(private apiService : ApiService) {}
 
   ngOnInit() {
+    this.newRowForm = new FormGroup({
+      network: new FormControl('', Validators.required),
+      next_hop: new FormControl('', [Validators.required]),
+    });
+
     this.loading = true;
     this.getAllNodes();
     this.getAllLinks();
@@ -61,7 +74,16 @@ export class WorkspaceComponent implements OnInit {
   }
 
   addInterface(node : Node) {
-    node.interfaces.push(node.id + "." + node.interfaces.length);
+    if (node.type == NodeType.CLIENT) {
+      if (node.interfaces.length == 0) {
+        node.interfaces.push("192.168.1." + this.getClientInterfaceNumber());
+      } else {
+        alert("Client node can only have 1 interface!");
+        this.drawingMode = false;
+      }
+    } else {
+      node.interfaces.push("10.1." + (node.interfaces.length + 1) + "." + this.checkIfLinkExistsAndReturnNumber());
+    }
 
     this.apiService.postNode(node).subscribe(
       response => {
@@ -89,7 +111,7 @@ export class WorkspaceComponent implements OnInit {
         link.interfaceB = response.interfaceB;
 
         this.links.push(link);
-        this.drawLinks()
+        this.drawLinksAndInterfaces()
       },
       error => {
         alert("An error occured - Cannot add new link!");
@@ -113,7 +135,7 @@ export class WorkspaceComponent implements OnInit {
     this.apiService.getAllLinks().subscribe(
       response => {
         this.links = response;
-        this.drawLinks();
+        this.drawLinksAndInterfaces();
       },
       err => {
         alert("An error occured when getting links from the server!")
@@ -188,7 +210,7 @@ export class WorkspaceComponent implements OnInit {
     }
   }
 
-  private drawLinks() {
+  private drawLinksAndInterfaces() {
     for (let link of this.links) {
       var c =  <HTMLCanvasElement> document.getElementById("myCanvas");
       var ctx = c.getContext("2d");
@@ -297,10 +319,54 @@ export class WorkspaceComponent implements OnInit {
     }
   }
 
-  getRoutingTableAsPairTable(routingTable : Map<string, string>) {
-    let table = [];
-    routingTable = new Map<string, string>();
-    routingTable.forEach(pair => table.push(pair[0], pair[1]));
-    return table;
+  getRoutingTableAsPairTable(node: Node) {
+    let routingTableRows = [];
+
+    for (let pair of Object.entries(node.routingTable)) {
+      routingTableRows.push({network: pair[0], next_hop: pair[1]});
+    }
+
+    return routingTableRows;
   }
+
+  addRow(node : Node) {
+    let map = new Map(Object.entries(node.routingTable));
+    map.set(this.newRowForm.get('network').value, this.newRowForm.get('next_hop').value);
+
+    const convMap = {};
+    map.forEach((val: string, key: string) => {
+      convMap[key] = val;
+    });
+
+    this.apiService.postRoutingTableRow(node.id, convMap).subscribe(
+      response => {
+        node = response;
+      },
+      error => {
+        alert("An error occured - Cannot update node parameters!");
+      }
+    );
+  }
+
+  checkIfLinkExistsAndReturnNumber() {
+    if (this.lastCreatedInterface == null) {
+      return 1;
+    } else {
+      return 2;
+    }
+  }
+
+  getClientInterfaceNumber() {
+    for (let node of this.nodes) {
+      if (node.type == NodeType.CLIENT && node.interfaces.length > 0) {
+        return ++this.clientInterfacesCounter;
+      }
+    }
+    return 1;
+  }
+}
+
+export interface RoutingTableRow {
+  network: string;
+  next_hop: string;
 }

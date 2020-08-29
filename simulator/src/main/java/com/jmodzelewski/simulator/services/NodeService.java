@@ -8,8 +8,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.net.InetAddress;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
 import com.google.common.net.InetAddresses;
@@ -36,10 +38,17 @@ public class NodeService {
                 break;
         }
 
-        //Losowy adres IP
-        Random r = new Random();
-        nodeDTO.setLoopback(InetAddresses.fromInteger(r.nextInt()).getHostAddress());
+        nodeDTO.setLoopback(InetAddress.getLoopbackAddress().getHostAddress());
         return nodeDTO;
+    }
+
+    @Transactional
+    public NodeDTO addRoutingTableRow(Long id, Map<String, String> rows) {
+        Node node = nodeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Error: Node with id:" + id + " not found."));
+        node.getRoutingTable().putAll(rows);
+        nodeRepository.save(node);
+        return mapNodeToDTO(node);
     }
 
     @Transactional
@@ -111,28 +120,5 @@ public class NodeService {
         nodeDTO.setPreviousY(node.getPreviousY());
 
         return nodeDTO;
-    }
-
-    private String generateIPAddress(int p1, int p2, int p3) {
-
-        StringBuilder sb = null;
-
-        int b1 = (p1 >> 24) & 0xff;
-        int b2 = (p2 >> 16) & 0xff;
-        int b3 = (p3 >>  8) & 0xff;
-        int b4 = 0;
-
-        String ip1 = Integer.toString(b1);
-        String ip2 = Integer.toString(b2);
-        String ip3 = Integer.toString(b3);
-        String ip4 = Integer.toString(b4);
-
-        //Now the IP is b1.b2.b3.b4
-        sb = new StringBuilder();
-        sb.append(ip1).append(".").append(ip2).append(".").append(ip3).append(".").append(ip4);
-        // System.out.println(sb);
-
-        return sb.toString();
-
     }
 }
