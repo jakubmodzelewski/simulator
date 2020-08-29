@@ -60,7 +60,7 @@ public class NodeController {
     public ResponseEntity<List<NodeDTO>> delete(@PathVariable Long id) {
         NodeDTO nodeDTO = nodeService.getNode(id);
         for (LinkDTO linkDTO : linkService.getAll()) {
-            if (linkDTO.getInterfaceA().equals(nodeDTO) || linkDTO.getInterfaceB().equals(nodeDTO)) {
+            if (linkDTO.getNodeA().equals(nodeDTO) || linkDTO.getNodeB().equals(nodeDTO)) {
                 linkService.deleteById(linkDTO.getId());
             }
         }

@@ -23,8 +23,8 @@ public class LinkService {
     public LinkDTO save(LinkDTO linkDTO) {
         Link link = linkRepository.save(mapLinkDTO(linkDTO));
         linkDTO.setId(link.getId());
-        linkDTO.setInterfaceA(nodeService.mapNodeToDTO(link.getInterfaceA()));
-        linkDTO.setInterfaceB(nodeService.mapNodeToDTO(link.getInterfaceB()));
+        linkDTO.setNodeA(nodeService.mapNodeToDTO(link.getNodeA()));
+        linkDTO.setNodeB(nodeService.mapNodeToDTO(link.getNodeB()));
         return linkDTO;
     }
 
@@ -58,8 +58,17 @@ public class LinkService {
     private Link mapLinkDTO(LinkDTO linkDTO) {
         Link link = new Link();
         link.setId(linkDTO.getId());
-        link.setInterfaceA(nodeService.mapDTOtoNode(linkDTO.getInterfaceA()));
-        link.setInterfaceB(nodeService.mapDTOtoNode(linkDTO.getInterfaceB()));
+        link.setNodeA(nodeService.mapDTOtoNode(linkDTO.getNodeA()));
+        link.setNodeB(nodeService.mapDTOtoNode(linkDTO.getNodeB()));
+
+        link.setInterfaceA(linkDTO.getInterfaceA());
+        link.setInterfaceB(linkDTO.getInterfaceB());
+
+        link.setXA(linkDTO.getXA());
+        link.setYA(linkDTO.getYA());
+        link.setXB(linkDTO.getXB());
+        link.setYB(linkDTO.getYB());
+
         return link;
     }
 
@@ -67,8 +76,16 @@ public class LinkService {
         LinkDTO linkDTO = new LinkDTO();
 
         linkDTO.setId(link.getId());
-        linkDTO.setInterfaceA(nodeService.mapNodeToDTO(link.getInterfaceA()));
-        linkDTO.setInterfaceB(nodeService.mapNodeToDTO(link.getInterfaceB()));
+        linkDTO.setNodeA(nodeService.mapNodeToDTO(link.getNodeA()));
+        linkDTO.setNodeB(nodeService.mapNodeToDTO(link.getNodeB()));
+
+        linkDTO.setInterfaceA(link.getInterfaceA());
+        linkDTO.setInterfaceB(link.getInterfaceB());
+
+        linkDTO.setXA(link.getXA());
+        linkDTO.setYA(link.getYA());
+        linkDTO.setXB(link.getXB());
+        linkDTO.setYB(link.getYB());
 
         return linkDTO;
     }

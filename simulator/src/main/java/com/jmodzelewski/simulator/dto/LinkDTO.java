@@ -11,6 +11,14 @@ import lombok.NoArgsConstructor;
 @Builder
 public class LinkDTO {
     Long id;
-    NodeDTO interfaceA;
-    NodeDTO interfaceB;
+    NodeDTO nodeA;
+    NodeDTO nodeB;
+
+    String interfaceA;
+    String interfaceB;
+
+    int xA;
+    int yA;
+    int xB;
+    int yB;
 }

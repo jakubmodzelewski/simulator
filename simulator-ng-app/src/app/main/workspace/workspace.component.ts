@@ -17,19 +17,21 @@ export class WorkspaceComponent implements OnInit {
 
   //Flagi sterujące
   leftSideBarOpened = true;
-  rightSideBarOpened = false;
   drawingMode = false;
   loading = false;
 
   nodes : Node[] = [];
   links : Link[] = [];
 
+  consoleContent: string;
+
   lastCreatedInterface = null;
+  lastCreatedNode = null;
 
   //Stałe do rysowania
-  HALF_IMAGE_LENGTH = 17.5;
-  ROUTER_RADIUS = this.HALF_IMAGE_LENGTH * 1.41; // promień ikony routera
-  CLIENT_RADIUS = this.ROUTER_RADIUS * 2; // promień ikony klienta
+  HALF_IMAGE_LENGTH = 20;
+  ROUTER_RADIUS = this.HALF_IMAGE_LENGTH * 2; // promień ikony routera
+  CLIENT_RADIUS = this.ROUTER_RADIUS * 1.3; // promień ikony klienta
 
   //Kolumny tabel z parametrami
   nodeParametersColumns: string[] = ['name', 'type', 'loopback'];
@@ -38,6 +40,8 @@ export class WorkspaceComponent implements OnInit {
   newRowForm: FormGroup;
 
   clientInterfacesCounter = 1;
+  simulationStarted: boolean;
+  pingMode: boolean;
 
   constructor(private apiService : ApiService) {}
 
@@ -74,15 +78,18 @@ export class WorkspaceComponent implements OnInit {
   }
 
   addInterface(node : Node) {
+    let newInterface;
     if (node.type == NodeType.CLIENT) {
       if (node.interfaces.length == 0) {
-        node.interfaces.push("192.168.1." + this.getClientInterfaceNumber());
+        newInterface = "192.168.1." + this.getClientInterfaceNumber();
+        node.interfaces.push(newInterface);
       } else {
         alert("Client node can only have 1 interface!");
         this.drawingMode = false;
       }
     } else {
-      node.interfaces.push("10.1." + (node.interfaces.length + 1) + "." + this.checkIfLinkExistsAndReturnNumber());
+      newInterface = "10.1." + (node.interfaces.length + 1) + "." + this.checkIfLinkExistsAndReturnNumber();
+      node.interfaces.push(newInterface);
     }
 
     this.apiService.postNode(node).subscribe(
@@ -93,20 +100,29 @@ export class WorkspaceComponent implements OnInit {
       }
     );
 
-    if (this.lastCreatedInterface == null) {
-      this.lastCreatedInterface = node;
+    if (this.lastCreatedInterface == null || this.lastCreatedNode == null) {
+      this.lastCreatedInterface = newInterface;
+      this.lastCreatedNode = node;
     } else {
-      this.addLink(node);
+      this.addLink(node, this.lastCreatedNode, newInterface, this.lastCreatedInterface);
       this.lastCreatedInterface = null;
     }
   }
 
-  addLink(node : Node) {
-    let link = new Link(this.lastCreatedInterface, node);
+  addLink(nodeA : Node, nodeB : Node, interfaceA : string, interfaceB : string) {
+    let link = new Link(nodeA, nodeB, interfaceA, interfaceB);
 
     this.apiService.postLink(link).subscribe(
       response => {
         link.id = response.id;
+        link.nodeA = response.nodeA;
+        link.nodeB = response.nodeB;
+
+        link.xA = response.xA;
+        link.yA = response.yA;
+        link.xB = response.xB;
+        link.yB = response.yB;
+
         link.interfaceA = response.interfaceA;
         link.interfaceB = response.interfaceB;
 
@@ -124,6 +140,7 @@ export class WorkspaceComponent implements OnInit {
     this.apiService.getAllNodes().subscribe(
       response => {
         this.nodes = response;
+        console.log(this.nodes.length)
       },
       err => {
         alert("An error occured when getting nodes from the server!")
@@ -190,11 +207,6 @@ export class WorkspaceComponent implements OnInit {
 
   loadSimulation() {}
 
-
-  openNodeMenu() {
-    this.rightSideBarOpened = true;
-  }
-
   removeSelectedNode() {
     for(let node of this.nodes) {
       if (node.selected) {
@@ -219,15 +231,14 @@ export class WorkspaceComponent implements OnInit {
       ctx.lineWidth=2;
       ctx.strokeStyle="gray";
 
-      let x1, y1, x2, y2;
-      [x1, y1, x2, y2] = this.calculateLinkDrawpoint(
-        link.interfaceA.actualX + link.interfaceA.previousX + this.HALF_IMAGE_LENGTH,
-        link.interfaceA.actualY + link.interfaceA.previousY + this.HALF_IMAGE_LENGTH,
-        link.interfaceB.actualX + link.interfaceB.previousX + this.HALF_IMAGE_LENGTH,
-        link.interfaceB.actualY + link.interfaceB.previousY + this.HALF_IMAGE_LENGTH,
-        link.interfaceA.type, link.interfaceB.type);
-      ctx.moveTo(x1, y1);
-      ctx.lineTo(x2, y2);
+      [link.xA, link.yA, link.xB, link.yB] = this.calculateLinkDrawpoint(
+        link.nodeA.actualX + link.nodeA.previousX + this.HALF_IMAGE_LENGTH,
+        link.nodeA.actualY + link.nodeA.previousY + this.HALF_IMAGE_LENGTH,
+        link.nodeB.actualX + link.nodeB.previousX + this.HALF_IMAGE_LENGTH,
+        link.nodeB.actualY + link.nodeB.previousY + this.HALF_IMAGE_LENGTH,
+        link.nodeA.type, link.nodeB.type);
+      ctx.moveTo(link.xA, link.yA);
+      ctx.lineTo(link.xB, link.yB);
       ctx.stroke();
     }
   }
@@ -359,10 +370,19 @@ export class WorkspaceComponent implements OnInit {
   getClientInterfaceNumber() {
     for (let node of this.nodes) {
       if (node.type == NodeType.CLIENT && node.interfaces.length > 0) {
-        return ++this.clientInterfacesCounter;
+        ++this.clientInterfacesCounter;
       }
     }
-    return 1;
+    return this.clientInterfacesCounter;
+  }
+
+  checkIfNodeSelected() {
+    for (let node of this.nodes) {
+      if (node.selected) {
+        return false;
+      }
+    }
+    return true;
   }
 }
 

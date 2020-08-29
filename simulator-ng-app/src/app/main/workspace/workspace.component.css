@@ -16,6 +16,10 @@ img.drawing-mode {
   border: 2px darkgreen solid;
 }
 
+img.ping-mode {
+  border: 2px darkgreen solid;
+}
+
 img:hover {
   cursor: pointer;
 }
@@ -46,10 +50,6 @@ button {
   width: 160px;
 }
 
-button.right {
-  height: 100px;
-}
-
 button.small-plus {
   width: 7%;
 }
@@ -70,9 +70,8 @@ table {
 }
 
 .dot {
-  height: 15px;
-  width: 15px;
-  background-color: red;
+  height: 14px;
+  width: 14px;
   border-radius: 50%;
   display: inline-block;
   position: absolute;

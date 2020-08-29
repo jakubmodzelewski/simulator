@@ -4,10 +4,12 @@
   <mat-sidenav mode="side" [(opened)]="leftSideBarOpened" position="start" (click)="unselect();">
     <button type="button"
             class="btn btn-success"
+            (click)="simulationStarted = true"
     ><i class="fa fa-play"></i> Start
     </button>
     <button type="button"
             class="btn btn-danger"
+            (click)="simulationStarted = false"
     ><i class="fa fa-stop"></i> Stop
     </button>
     <button type="button"
@@ -42,20 +44,16 @@
             (click)="drawingMode=!drawingMode"
     ><i class="fa fa-plus"></i> Link
     </button>
-  </mat-sidenav>
 
-  <!-- Right side bar-->
-  <mat-sidenav mode="side" [(opened)]="rightSideBarOpened" position="end" (click)="unselect();">
     <button type="button"
-            class="btn btn-success btn-lg right"
+            class="btn btn-success btn-lg"
+            style="margin-top: 30px"
+            (click)="pingMode = !pingMode"
     ><i class="fa fa-angle-double-right"></i> Ping
     </button>
     <button type="button"
-            class="btn btn-info btn-lg right"
-    ><i class="fa fa-gear"></i> Configure
-    </button>
-    <button type="button"
-            class="btn btn-danger btn-lg right"
+            [disabled]="checkIfNodeSelected()"
+            class="btn btn-danger btn-lg"
             (click)="removeSelectedNode()"
     ><i class="fa fa-trash"></i> Delete
     </button>
@@ -63,19 +61,25 @@
 
   <!--  Workspace content-->
   <mat-sidenav-content style="background-color: azure">
+    <a *ngFor="let link of this.links">
+      <span class="dot" matTooltip="{{link.interfaceA}}"
+            [ngStyle]="{marginLeft: link.xA - 7 + 'px', marginTop: link.yA - 7 + 'px', backgroundColor: simulationStarted ? 'green' : 'red'}"></span>
+      <span class="dot" matTooltip="{{link.interfaceB}}"
+            [ngStyle]="{marginLeft: link.xB - 7 + 'px', marginTop: link.yB - 7 + 'px', backgroundColor: simulationStarted ? 'green' : 'red'}"></span>
+    </a>
     <div class="workspace" (click)="loading=false;">
       <a *ngFor="let node of nodes">
-        <img [ngClass]="{'selected': node.selected, 'drawing-mode': drawingMode}"
+        <img [ngClass]="{'selected': node.selected, 'drawing-mode': drawingMode, 'ping-mode': pingMode}"
              class="node"
              [src]=getImageSource(node.type)
              cdkDrag cdkDragBoundary=".workspace"
-             (click)="openNodeMenu(); select(node.id); drawingMode ? addInterface(node) : {}"
+             (click)="select(node.id); drawingMode ? addInterface(node) : {}"
              (cdkDragEnded)="updateParameters($event, node)"
              [style.left.px]="loading ? node.actualX + node.previousX : {}"
              [style.top.px]="loading ? node.actualY + node.previousY : {}">
       </a>
       <!--    TODO: Dostosować rozmiar do mat-sidenav-content-->
-      <canvas id="myCanvas" width="650" height="650" (click)="unselect(); rightSideBarOpened=false;"></canvas>
+      <canvas id="myCanvas" width="650" height="650" (click)="unselect();"></canvas>
     </div>
 
     <mat-tab-group id="bottom-bar">
@@ -84,7 +88,7 @@
           <mat-icon>article</mat-icon>
           Console
         </ng-template>
-        Content 1
+        {{consoleContent}}
       </mat-tab>
 
       <mat-tab>

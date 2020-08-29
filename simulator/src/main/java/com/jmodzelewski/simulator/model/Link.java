@@ -19,8 +19,16 @@ public class Link {
     private Long id;
 
     @ManyToOne(fetch = LAZY)
-    private Node interfaceA;
+    private Node nodeA;
 
     @ManyToOne(fetch = LAZY)
-    private Node interfaceB;
+    private Node nodeB;
+
+    private String interfaceA;
+    private String interfaceB;
+
+    int xA;
+    int yA;
+    int xB;
+    int yB;
 }
