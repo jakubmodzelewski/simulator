@@ -4,6 +4,9 @@ import {Link} from "../model/Link";
 import {ApiService} from "../../shared/api.service";
 import {NodeType} from "../model/node-type.enum";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
+import {Simulation} from "../model/Simulation";
+import {AuthService} from "../../auth/shared/auth.service";
+import {ToastrService} from "ngx-toastr";
 
 @Component({
   selector: 'app-workspace',
@@ -19,11 +22,12 @@ export class WorkspaceComponent implements OnInit {
   leftSideBarOpened = true;
   drawingMode = false;
   loading = false;
+  pingingBack = false;
 
   nodes : Node[] = [];
   links : Link[] = [];
 
-  consoleContent: string;
+  consoleContent = "";
 
   lastCreatedInterface = null;
   lastCreatedNode = null;
@@ -41,9 +45,11 @@ export class WorkspaceComponent implements OnInit {
 
   clientInterfacesCounter = 1;
   simulationStarted: boolean;
-  pingMode: boolean;
 
-  constructor(private apiService : ApiService) {}
+  pingMode: boolean;
+  sourceNode: Node;
+
+  constructor(private apiService : ApiService, private authService: AuthService, private toastrService : ToastrService) {}
 
   ngOnInit() {
     this.newRowForm = new FormGroup({
@@ -140,7 +146,6 @@ export class WorkspaceComponent implements OnInit {
     this.apiService.getAllNodes().subscribe(
       response => {
         this.nodes = response;
-        console.log(this.nodes.length)
       },
       err => {
         alert("An error occured when getting nodes from the server!")
@@ -203,7 +208,23 @@ export class WorkspaceComponent implements OnInit {
     );
   }
 
-  saveParameters() {}
+  saveSimulation() {
+    let simulation = new Simulation();
+    for (let node of this.nodes) {
+      simulation.nodes.push(node);
+    }
+    for (let link of this.links) {
+      simulation.links.push(link);
+    }
+    this.apiService.saveSimulation(this.authService.getUserName(), simulation).subscribe(
+      response => {
+        this.toastrService.success('Simulation saved successfully!');
+      },
+      error => {
+        alert("An error occured - Cannot save simulation!");
+      }
+    );
+  }
 
   loadSimulation() {}
 
@@ -383,6 +404,54 @@ export class WorkspaceComponent implements OnInit {
       }
     }
     return true;
+  }
+
+  ping(destinationNode : Node) {
+    if (this.simulationStarted) {
+      if (destinationNode.type != NodeType.CLIENT) {
+        alert("Only client nodes are able to send messages!");
+      } else {
+        if (this.sourceNode == null) {
+          this.sourceNode = destinationNode;
+        } else {
+          let date = new Date();
+          this.consoleContent += "[" + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds() + "]" + " Checking " + this.sourceNode.name + " routing table...\n";
+          this.checkPath(this.sourceNode, destinationNode.interfaces);
+        }
+      }
+    } else {
+      alert("Simulation must be started!");
+    }
+  }
+
+  checkPath(sourceNode : Node, interfaces : string[]) {
+    if (this.checkIfDestinationNodeReached(sourceNode, interfaces) && !this.pingingBack) {
+      this.pingingBack = true;
+      this.checkPath(sourceNode, this.sourceNode.interfaces);
+    }
+    for (let i of interfaces) {
+      let map = new Map(Object.entries(sourceNode.routingTable));
+      if (map.has(i)) {
+        for (let node of this.nodes) {
+          let newInterface = map.get(i);
+          if (node.interfaces.includes(newInterface)) {
+            let date = new Date();
+            this.consoleContent += "[" + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds() + "]" + " Message forwarded from " + sourceNode.name + " to " + node.name + "\n";
+            this.checkPath(node, interfaces);
+          }
+        }
+      }
+    }
+  }
+
+  checkIfDestinationNodeReached(sourceNode : Node, destinationInterfaces : string[]) {
+    if (sourceNode.interfaces.filter(value => destinationInterfaces.includes(value)).length > 0) {
+      let date = new Date();
+      this.consoleContent +=  "[" + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds() + "]" + " Destination reached.";
+      this.consoleContent += this.pingingBack ? "\n" : " Checking " + sourceNode.name + " routing table...\n";
+      return true;
+    }
+    return false;
   }
 }
 

@@ -55,7 +55,7 @@ public class LinkService {
         return getAll();
     }
 
-    private Link mapLinkDTO(LinkDTO linkDTO) {
+    public Link mapLinkDTO(LinkDTO linkDTO) {
         Link link = new Link();
         link.setId(linkDTO.getId());
         link.setNodeA(nodeService.mapDTOtoNode(linkDTO.getNodeA()));
@@ -72,7 +72,7 @@ public class LinkService {
         return link;
     }
 
-    private LinkDTO mapToDTO(Link link) {
+    public LinkDTO mapToDTO(Link link) {
         LinkDTO linkDTO = new LinkDTO();
 
         linkDTO.setId(link.getId());

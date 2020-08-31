@@ -1,10 +1,7 @@
 package com.jmodzelewski.simulator.services;
 
 import com.jmodzelewski.simulator.database.UserRepository;
-import com.jmodzelewski.simulator.dto.AuthenticationResponse;
-import com.jmodzelewski.simulator.dto.LoginRequest;
-import com.jmodzelewski.simulator.dto.RefreshTokenRequest;
-import com.jmodzelewski.simulator.dto.RegisterRequest;
+import com.jmodzelewski.simulator.dto.*;
 import com.jmodzelewski.simulator.model.User;
 import com.jmodzelewski.simulator.security.JWTProvider;
 import lombok.AllArgsConstructor;
@@ -18,16 +15,19 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.Instant;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
-public class AuthenticationService {
+public class UserService {
 
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final AuthenticationManager authenticationManager;
     private final JWTProvider jwtProvider;
     private final RefreshTokenService refreshTokenService;
+    private final SimulationService simulationService;
 
     @Transactional
     public void signUp(RegisterRequest registerRequest) {
@@ -60,5 +60,19 @@ public class AuthenticationService {
                 .expiresAt(Instant.now().plusMillis(jwtProvider.getJwtExpirationInMillis()))
                 .username(refreshTokenRequest.getUsername())
                 .build();
+    }
+
+    public void saveSimulation(String username, SimulationDTO simulationDTO) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Error: User " + username + " not found."));
+        user.getSimulations().add(simulationService.mapDTOtoSimulation(simulationDTO));
+        userRepository.save(user);
+    }
+
+    @Transactional
+    public List<SimulationDTO> getUserSimulations(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Error: User " + username + " not found."));
+        return user.getSimulations().stream().map(simulationService::mapSimulationToDTO).collect(Collectors.toList());
     }
 }

@@ -4,11 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.constraints.Email;
 import java.time.Instant;
+import java.util.LinkedList;
+import java.util.List;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
@@ -26,6 +26,11 @@ public class User {
 
     @Email
     private String email;
+
+    @ElementCollection
+    @CollectionTable(name = "simulations")
+    @Column(name = "simulation")
+    List<Simulation> simulations;
 
     private Instant created;
 

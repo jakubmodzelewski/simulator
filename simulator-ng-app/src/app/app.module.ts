@@ -26,6 +26,8 @@ import {MatTableModule} from "@angular/material/table";
 import {MatInputModule} from "@angular/material/input";
 import {MatButtonModule} from "@angular/material/button";
 import {MatTooltipModule} from "@angular/material/tooltip";
+import {MatCardModule} from "@angular/material/card";
+import {MatListModule} from "@angular/material/list";
 
 const appRoutes :Routes = [
   {
@@ -91,7 +93,9 @@ const appRoutes :Routes = [
     MatInputModule,
     FormsModule,
     MatButtonModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatCardModule,
+    MatListModule
   ],
   providers: [],
   bootstrap: [AppComponent]

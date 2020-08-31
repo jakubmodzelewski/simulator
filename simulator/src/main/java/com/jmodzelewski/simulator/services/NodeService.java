@@ -1,7 +1,7 @@
 package com.jmodzelewski.simulator.services;
 
-import com.jmodzelewski.simulator.dto.NodeDTO;
 import com.jmodzelewski.simulator.database.NodeRepository;
+import com.jmodzelewski.simulator.dto.NodeDTO;
 import com.jmodzelewski.simulator.model.Node;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,9 +12,7 @@ import java.net.InetAddress;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.stream.Collectors;
-import com.google.common.net.InetAddresses;
 
 @Service
 @AllArgsConstructor

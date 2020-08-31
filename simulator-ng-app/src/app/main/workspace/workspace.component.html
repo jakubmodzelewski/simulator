@@ -14,13 +14,14 @@
     </button>
     <button type="button"
             class="btn btn-warning"
+            [disabled]="simulationStarted"
             (click)="resetWorkspace()"
     ><i class="fa fa-repeat"></i> Reset
     </button>
     <button type="button"
             class="btn btn-info"
             style="margin-top: 30px"
-            (click)="saveParameters()"
+            (click)="saveSimulation()"
     ><i class="fa fa-save"></i> Save
     </button>
     <button type="button"
@@ -31,16 +32,19 @@
     <button type="button"
             class="btn btn-info"
             style="margin-top: 30px"
+            [disabled]="simulationStarted"
             (click)="addNode('ROUTER')"
     ><i class="fa fa-plus"></i> Router
     </button>
     <button type="button"
             class="btn btn-info"
+            [disabled]="simulationStarted"
             (click)="addNode('CLIENT')"
     ><i class="fa fa-plus"></i> Client
     </button>
     <button type="button"
             class="btn btn-info"
+            [disabled]="simulationStarted"
             (click)="drawingMode=!drawingMode"
     ><i class="fa fa-plus"></i> Link
     </button>
@@ -48,6 +52,7 @@
     <button type="button"
             class="btn btn-success btn-lg"
             style="margin-top: 30px"
+            [disabled]="!simulationStarted"
             (click)="pingMode = !pingMode"
     ><i class="fa fa-angle-double-right"></i> Ping
     </button>
@@ -73,7 +78,7 @@
              class="node"
              [src]=getImageSource(node.type)
              cdkDrag cdkDragBoundary=".workspace"
-             (click)="select(node.id); drawingMode ? addInterface(node) : {}"
+             (click)="select(node.id); drawingMode ? addInterface(node) : {}; pingMode ? ping(node) : {}"
              (cdkDragEnded)="updateParameters($event, node)"
              [style.left.px]="loading ? node.actualX + node.previousX : {}"
              [style.top.px]="loading ? node.actualY + node.previousY : {}">
@@ -88,7 +93,9 @@
           <mat-icon>article</mat-icon>
           Console
         </ng-template>
-        {{consoleContent}}
+        <span style="white-space: pre-line">
+           {{consoleContent}}
+        </span>
       </mat-tab>
 
       <mat-tab>

@@ -3,6 +3,7 @@ import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {Node} from "../main/model/Node";
 import {Link} from "../main/model/Link";
+import {Simulation} from "../main/model/Simulation";
 
 @Injectable({
   providedIn: 'root'
@@ -12,6 +13,7 @@ export class ApiService {
   private LINK_URL = 'http://localhost:8080/workspace/link';
   private ALL_NODES_URL = 'http://localhost:8080/workspace/node/all';
   private ALL_LINKS_URL = 'http://localhost:8080/workspace/link/all';
+  private SIMULATION_URL = 'http://localhost:8080/api/auth/simulation';
 
   constructor(private httpClient : HttpClient) { }
 
@@ -32,7 +34,7 @@ export class ApiService {
   }
 
   deleteNode(id : string) {
-    return this.httpClient.delete<Node[]>("http://localhost:8080/workspace/node/" + id);
+    return this.httpClient.delete<Node[]>(this.NODE_URL + "/" + id);
   }
 
   postLink(link : Link) : Observable<Link> {
@@ -45,5 +47,13 @@ export class ApiService {
 
   deleteAllLinks() : Observable<Link[]> {
     return this.httpClient.delete<Link[]>(this.ALL_LINKS_URL);
+  }
+
+  saveSimulation(username : string, simulation : Simulation) : Observable<any> {
+    return this.httpClient.post(this.SIMULATION_URL + "/" + username, simulation, {responseType : "text"});
+  }
+
+  getUserSimulations(username : string) : Observable<Simulation[]> {
+    return this.httpClient.get<Simulation[]>(this.SIMULATION_URL + "/" + username);
   }
 }
