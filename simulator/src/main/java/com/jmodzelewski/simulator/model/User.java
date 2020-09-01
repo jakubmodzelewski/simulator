@@ -32,6 +32,8 @@ public class User {
     @Column(name = "simulation")
     List<Simulation> simulations;
 
+    private Long lastUsedSimulationId;
+
     private Instant created;
 
 }

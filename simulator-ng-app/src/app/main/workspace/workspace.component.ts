@@ -24,8 +24,7 @@ export class WorkspaceComponent implements OnInit {
   loading = false;
   pingingBack = false;
 
-  nodes : Node[] = [];
-  links : Link[] = [];
+  simulation = new Simulation();
 
   consoleContent = "";
 
@@ -38,7 +37,7 @@ export class WorkspaceComponent implements OnInit {
   CLIENT_RADIUS = this.ROUTER_RADIUS * 1.3; // promień ikony klienta
 
   //Kolumny tabel z parametrami
-  nodeParametersColumns: string[] = ['name', 'type', 'loopback'];
+  nodeParametersColumns: string[] = ['name', 'type'];
   routingTableColumns: string[] = ['network', 'next-hop'];
 
   newRowForm: FormGroup;
@@ -53,19 +52,53 @@ export class WorkspaceComponent implements OnInit {
 
   ngOnInit() {
     this.newRowForm = new FormGroup({
-      network: new FormControl('', Validators.required),
-      next_hop: new FormControl('', [Validators.required]),
+      network: new FormControl(''),
+      next_hop: new FormControl(''),
     });
 
     this.loading = true;
-    this.getAllNodes();
-    this.getAllLinks();
+
+    this.apiService.currentId.subscribe(id => this.simulation.id = id);
+    if (this.simulation.id == '') {
+      this.apiService.getUserLastSimulation(this.authService.getUserName()).subscribe(id => {
+        this.simulation.id = id;
+        if (this.simulation.id != '') {
+          this.apiService.getSimulation(this.simulation.id).subscribe(
+            response => {
+              this.simulation = response;
+              this.drawLinksAndInterfaces();
+            },
+            err => {
+              alert("An error occured when getting simulation from the server!")
+            }
+          );
+        }
+      });
+    } else {
+      this.apiService.getSimulation(this.simulation.id).subscribe(
+        response => {
+          this.simulation = response;
+          this.drawLinksAndInterfaces();
+        },
+        err => {
+          alert("An error occured when getting simulation from the server!")
+        }
+      );
+    }
+
+
+    // this.getAllNodes();
+    // this.getAllLinks();
   }
 
   //Dodaj nowy węzeł do pola roboczego
   addNode(nodeType : string) {
     let node = new Node();
     node.type = nodeType == NodeType.ROUTER ? NodeType.ROUTER : NodeType.CLIENT;
+    this.simulation.nodes.push(node);
+  }
+
+  saveNode(node : Node) {
     this.apiService.postNode(node).subscribe(
       response => {
         node.id = response.id;
@@ -75,7 +108,6 @@ export class WorkspaceComponent implements OnInit {
         node.actualY = response.actualY;
         node.previousX = response.previousX;
         node.previousY = response.previousY;
-        this.nodes.push(node);
       },
       error => {
         alert("An error occured - Cannot add new node!");
@@ -98,14 +130,6 @@ export class WorkspaceComponent implements OnInit {
       node.interfaces.push(newInterface);
     }
 
-    this.apiService.postNode(node).subscribe(
-      response => {
-      },
-      error => {
-        alert("An error occured - Cannot update node parameters!");
-      }
-    );
-
     if (this.lastCreatedInterface == null || this.lastCreatedNode == null) {
       this.lastCreatedInterface = newInterface;
       this.lastCreatedNode = node;
@@ -117,7 +141,11 @@ export class WorkspaceComponent implements OnInit {
 
   addLink(nodeA : Node, nodeB : Node, interfaceA : string, interfaceB : string) {
     let link = new Link(nodeA, nodeB, interfaceA, interfaceB);
+    this.simulation.links.push(link);
+    this.drawLinksAndInterfaces();
+  }
 
+  saveLink(link) {
     this.apiService.postLink(link).subscribe(
       response => {
         link.id = response.id;
@@ -132,8 +160,7 @@ export class WorkspaceComponent implements OnInit {
         link.interfaceA = response.interfaceA;
         link.interfaceB = response.interfaceB;
 
-        this.links.push(link);
-        this.drawLinksAndInterfaces()
+        this.simulation.links.push(link);
       },
       error => {
         alert("An error occured - Cannot add new link!");
@@ -145,7 +172,7 @@ export class WorkspaceComponent implements OnInit {
   getAllNodes() {
     this.apiService.getAllNodes().subscribe(
       response => {
-        this.nodes = response;
+        this.simulation.nodes = response;
       },
       err => {
         alert("An error occured when getting nodes from the server!")
@@ -156,7 +183,7 @@ export class WorkspaceComponent implements OnInit {
   private getAllLinks() {
     this.apiService.getAllLinks().subscribe(
       response => {
-        this.links = response;
+        this.simulation.links = response;
         this.drawLinksAndInterfaces();
       },
       err => {
@@ -177,46 +204,33 @@ export class WorkspaceComponent implements OnInit {
 
     node.actualX = boundingClientRect.x - parentPosition.left;
     node.actualY = boundingClientRect.y - parentPosition.top;
-
-    this.apiService.postNode(node).subscribe(
-      response => {
-      },
-      error => {
-        alert("An error occured - Cannot update node parameters!");
-      }
-    );
   }
 
   //Czyści całe pole robocze
   resetWorkspace() {
-    this.apiService.deleteAllLinks().subscribe(
-      response => {
-        this.links = response;
-        this.clearLinks();
-        this.apiService.deleteAllNodes().subscribe(
-          response => {
-            this.nodes = response;
-          },
-          error => {
-            alert("An error occured during workspace reset")
-          }
-        );
-      },
-      error => {
-        alert("An error occured during workspace reset")
-      }
-    );
+    this.simulation = new Simulation();
+    this.clearLinks();
+    // this.apiService.deleteAllLinks().subscribe(
+    //   response => {
+    //     this.simulation.links = response;
+    //     this.clearLinks();
+    //     this.apiService.deleteAllNodes().subscribe(
+    //       response => {
+    //         this.simulation.nodes = response;
+    //       },
+    //       error => {
+    //         alert("An error occured during workspace reset")
+    //       }
+    //     );
+    //   },
+    //   error => {
+    //     alert("An error occured during workspace reset")
+    //   }
+    // );
   }
 
   saveSimulation() {
-    let simulation = new Simulation();
-    for (let node of this.nodes) {
-      simulation.nodes.push(node);
-    }
-    for (let link of this.links) {
-      simulation.links.push(link);
-    }
-    this.apiService.saveSimulation(this.authService.getUserName(), simulation).subscribe(
+    this.apiService.saveSimulation(this.authService.getUserName(), this.simulation).subscribe(
       response => {
         this.toastrService.success('Simulation saved successfully!');
       },
@@ -226,25 +240,19 @@ export class WorkspaceComponent implements OnInit {
     );
   }
 
-  loadSimulation() {}
-
   removeSelectedNode() {
-    for(let node of this.nodes) {
+    for (let node of this.simulation.nodes) {
       if (node.selected) {
-        this.apiService.deleteNode(node.id).subscribe(
-          response => {
-            this.nodes = response;
-          },
-          error => {
-            alert("An error occured during removing node")
-          }
-        );
+        this.simulation.links = this.simulation.links.filter(link => (link.nodeA.actualX != node.actualX && link.nodeB.actualX != node.actualX));
       }
     }
+    this.simulation.nodes = this.simulation.nodes.filter(node => !node.selected);
+    this.clearLinks();
+    this.drawLinksAndInterfaces();
   }
 
   private drawLinksAndInterfaces() {
-    for (let link of this.links) {
+    for (let link of this.simulation.links) {
       var c =  <HTMLCanvasElement> document.getElementById("myCanvas");
       var ctx = c.getContext("2d");
 
@@ -271,7 +279,7 @@ export class WorkspaceComponent implements OnInit {
   }
 
   select(id: string) {
-    for (let node of this.nodes) {
+    for (let node of this.simulation.nodes) {
       node.selected = node.id == id;
     }
   }
@@ -344,7 +352,7 @@ export class WorkspaceComponent implements OnInit {
   }
 
   unselect() {
-    for (let node of this.nodes) {
+    for (let node of this.simulation.nodes) {
       if (node.selected) {
         node.selected = false;
       }
@@ -389,7 +397,7 @@ export class WorkspaceComponent implements OnInit {
   }
 
   getClientInterfaceNumber() {
-    for (let node of this.nodes) {
+    for (let node of this.simulation.nodes) {
       if (node.type == NodeType.CLIENT && node.interfaces.length > 0) {
         ++this.clientInterfacesCounter;
       }
@@ -398,7 +406,7 @@ export class WorkspaceComponent implements OnInit {
   }
 
   checkIfNodeSelected() {
-    for (let node of this.nodes) {
+    for (let node of this.simulation.nodes) {
       if (node.selected) {
         return false;
       }
@@ -432,7 +440,7 @@ export class WorkspaceComponent implements OnInit {
     for (let i of interfaces) {
       let map = new Map(Object.entries(sourceNode.routingTable));
       if (map.has(i)) {
-        for (let node of this.nodes) {
+        for (let node of this.simulation.nodes) {
           let newInterface = map.get(i);
           if (node.interfaces.includes(newInterface)) {
             let date = new Date();

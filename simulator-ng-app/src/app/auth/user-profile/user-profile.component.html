@@ -4,7 +4,7 @@
       Welcome <b>{{name}}</b>.<br />
       This is list of your saved simulations:
       <mat-list *ngFor="let simulation of this.simulations">
-        <button mat-list-item (click)="loadSimulation(simulation)"> {{"Simulation" + simulation.id}} </button>
+        <button mat-list-item (click)="loadSimulation(simulation.id)"> {{"Simulation" + simulation.id}} </button>
         <mat-divider></mat-divider>
       </mat-list>
     </div>

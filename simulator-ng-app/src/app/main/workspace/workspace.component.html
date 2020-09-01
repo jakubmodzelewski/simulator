@@ -16,18 +16,13 @@
             class="btn btn-warning"
             [disabled]="simulationStarted"
             (click)="resetWorkspace()"
-    ><i class="fa fa-repeat"></i> Reset
+    ><i class="fa fa-repeat"></i> New Simulation
     </button>
     <button type="button"
             class="btn btn-info"
             style="margin-top: 30px"
             (click)="saveSimulation()"
     ><i class="fa fa-save"></i> Save
-    </button>
-    <button type="button"
-            class="btn btn-info"
-            (click)="loadSimulation()"
-    ><i class="fa fa-folder"></i> Load
     </button>
     <button type="button"
             class="btn btn-info"
@@ -66,14 +61,14 @@
 
   <!--  Workspace content-->
   <mat-sidenav-content style="background-color: azure">
-    <a *ngFor="let link of this.links">
+    <a *ngFor="let link of simulation.links">
       <span class="dot" matTooltip="{{link.interfaceA}}"
             [ngStyle]="{marginLeft: link.xA - 7 + 'px', marginTop: link.yA - 7 + 'px', backgroundColor: simulationStarted ? 'green' : 'red'}"></span>
       <span class="dot" matTooltip="{{link.interfaceB}}"
             [ngStyle]="{marginLeft: link.xB - 7 + 'px', marginTop: link.yB - 7 + 'px', backgroundColor: simulationStarted ? 'green' : 'red'}"></span>
     </a>
     <div class="workspace" (click)="loading=false;">
-      <a *ngFor="let node of nodes">
+      <a *ngFor="let node of simulation.nodes">
         <img [ngClass]="{'selected': node.selected, 'drawing-mode': drawingMode, 'ping-mode': pingMode}"
              class="node"
              [src]=getImageSource(node.type)
@@ -104,7 +99,7 @@
           Node parameters
         </ng-template>
 
-        <table mat-table [dataSource]="nodes" class="mat-elevation-z8">
+        <table mat-table [dataSource]="simulation.nodes" class="mat-elevation-z8">
           <ng-container matColumnDef="name">
             <th mat-header-cell *matHeaderCellDef> Name</th>
             <td mat-cell *matCellDef="let node"> {{node.name}} </td>
@@ -112,10 +107,6 @@
           <ng-container matColumnDef="type">
             <th mat-header-cell *matHeaderCellDef> Type</th>
             <td mat-cell *matCellDef="let node"> {{node.type}} </td>
-          </ng-container>
-          <ng-container matColumnDef="loopback">
-            <th mat-header-cell *matHeaderCellDef> Loopback</th>
-            <td mat-cell *matCellDef="let node"> {{node.loopback}} </td>
           </ng-container>
 
           <tr mat-header-row *matHeaderRowDef="nodeParametersColumns"></tr>
@@ -125,7 +116,7 @@
       </mat-tab>
 
       <mat-tab>
-        <a *ngFor="let node of nodes">
+        <a *ngFor="let node of simulation.nodes">
           <a *ngIf="node.selected">
             <ng-template mat-tab-label>
               <img class="mat-icon" [src]=getImageSource(node.type)/>

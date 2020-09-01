@@ -1,9 +1,7 @@
 package com.jmodzelewski.simulator.controllers;
 
 import com.jmodzelewski.simulator.dto.*;
-import com.jmodzelewski.simulator.services.SimulationService;
-import com.jmodzelewski.simulator.services.UserService;
-import com.jmodzelewski.simulator.services.RefreshTokenService;
+import com.jmodzelewski.simulator.services.*;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +21,8 @@ public class UserController {
     private final UserService userService;
     private final SimulationService simulationService;
     private final RefreshTokenService refreshTokenService;
+    private final NodeService nodeService;
+    private final LinkService linkService;
 
     @PostMapping("/signup")
     public ResponseEntity<String> signUp(@RequestBody RegisterRequest registerRequest) {
@@ -46,17 +46,40 @@ public class UserController {
         return ResponseEntity.status(OK).body("Refresh token deleted successfully.");
     }
 
-    @PostMapping("/simulation/{username}")
-    public ResponseEntity<String> saveSimulation(@PathVariable String username, @RequestBody SimulationDTO simulationDTO) {
+    @PostMapping("/simulations/{username}")
+    public ResponseEntity<SimulationDTO> saveSimulation(@PathVariable String username, @RequestBody SimulationDTO simulationDTO) {
+        for (NodeDTO nodeDTO : simulationDTO.getNodes()) {
+            nodeService.save(nodeDTO);
+        }
+
+        for (LinkDTO linkDTO : simulationDTO.getLinks()) {
+            linkService.save(linkDTO);
+        }
+
         simulationService.save(simulationDTO);
         userService.saveSimulation(username, simulationDTO);
-        return new ResponseEntity<>("Simulation saved successfully!", OK);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(simulationDTO);
     }
 
-    @GetMapping("/simulation/{username}")
+    @GetMapping("/simulations/{username}")
     public  ResponseEntity<List<SimulationDTO>> getAllUserSimulations(@PathVariable String username) {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(userService.getUserSimulations(username));
+    }
+
+    @GetMapping("/simulation/{id}")
+    public ResponseEntity<SimulationDTO> getUserSimulation(@PathVariable Long id) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(userService.getUserSimulation(id));
+    }
+
+    @GetMapping("/simulationId/{username}")
+    public ResponseEntity<Long> getUserLastSimulation(@PathVariable String username ) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(userService.getUserLastSimulationId(username));
     }
 }

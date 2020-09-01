@@ -3,6 +3,7 @@ package com.jmodzelewski.simulator.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Cascade;
 
 import javax.persistence.*;
 import java.util.LinkedList;
@@ -19,9 +20,9 @@ public class Simulation {
     @GeneratedValue(strategy = IDENTITY)
     Long id;
 
-    @ManyToMany
+    @ManyToMany(cascade= {CascadeType.REMOVE})
     List<Node> nodes = new LinkedList<>();
 
-    @ManyToMany
+    @ManyToMany(cascade= {CascadeType.REMOVE})
     List<Link> links = new LinkedList<>();
 }

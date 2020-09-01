@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.LinkedList;
 
 @Service
 @AllArgsConstructor
@@ -42,6 +43,15 @@ public class SimulationService {
             simulation =  simulationRepository.findById(simulationDTO.getId()).orElseThrow(
                     () -> new RuntimeException("Error: Simulation with id:" + simulationDTO.getId() + " not found.")
             );
+
+            simulation.setNodes(new LinkedList<>());
+            simulation.setLinks(new LinkedList<>());
+            for (NodeDTO nodeDTO : simulationDTO.getNodes()) {
+                simulation.getNodes().add(nodeService.mapDTOtoNode(nodeDTO));
+            }
+            for (LinkDTO linkDTO : simulationDTO.getLinks()) {
+                simulation.getLinks().add(linkService.mapLinkDTO(linkDTO));
+            }
         } else {
             simulation = new Simulation();
             simulation.setId(simulationDTO.getId());

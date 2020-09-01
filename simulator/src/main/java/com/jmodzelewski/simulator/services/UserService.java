@@ -2,6 +2,7 @@ package com.jmodzelewski.simulator.services;
 
 import com.jmodzelewski.simulator.database.UserRepository;
 import com.jmodzelewski.simulator.dto.*;
+import com.jmodzelewski.simulator.model.Simulation;
 import com.jmodzelewski.simulator.model.User;
 import com.jmodzelewski.simulator.security.JWTProvider;
 import lombok.AllArgsConstructor;
@@ -62,11 +63,16 @@ public class UserService {
                 .build();
     }
 
-    public void saveSimulation(String username, SimulationDTO simulationDTO) {
+    public SimulationDTO saveSimulation(String username, SimulationDTO simulationDTO) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Error: User " + username + " not found."));
-        user.getSimulations().add(simulationService.mapDTOtoSimulation(simulationDTO));
+        Simulation simulation = simulationService.mapDTOtoSimulation(simulationDTO);
+
+        user.getSimulations().stream().filter(sim -> sim.getId().equals(simulation.getId())).findFirst().ifPresentOrElse(sim -> sim = simulation, () -> user.getSimulations().add(simulation));
+
+        user.setLastUsedSimulationId(simulationDTO.getId());
         userRepository.save(user);
+        return simulationDTO;
     }
 
     @Transactional
@@ -74,5 +80,17 @@ public class UserService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Error: User " + username + " not found."));
         return user.getSimulations().stream().map(simulationService::mapSimulationToDTO).collect(Collectors.toList());
+    }
+
+    @Transactional
+    public SimulationDTO getUserSimulation(Long id) {
+        return simulationService.load(id);
+    }
+
+    @Transactional
+    public Long getUserLastSimulationId(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Error: User " + username + " not found."));
+        return user.getLastUsedSimulationId();
     }
 }

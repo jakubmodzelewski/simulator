@@ -28,4 +28,7 @@ export class UserProfileComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  loadSimulation(id: string) {
+    this.apiService.setActiveSimulationId(id);
+  }
 }
