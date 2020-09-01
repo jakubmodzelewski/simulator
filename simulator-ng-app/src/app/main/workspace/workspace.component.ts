@@ -62,7 +62,7 @@ export class WorkspaceComponent implements OnInit {
     if (this.simulation.id == '') {
       this.apiService.getUserLastSimulation(this.authService.getUserName()).subscribe(id => {
         this.simulation.id = id;
-        if (this.simulation.id != '') {
+        if (this.simulation.id != null) {
           this.apiService.getSimulation(this.simulation.id).subscribe(
             response => {
               this.simulation = response;
@@ -85,10 +85,6 @@ export class WorkspaceComponent implements OnInit {
         }
       );
     }
-
-
-    // this.getAllNodes();
-    // this.getAllLinks();
   }
 
   //Dodaj nowy węzeł do pola roboczego
@@ -96,23 +92,6 @@ export class WorkspaceComponent implements OnInit {
     let node = new Node();
     node.type = nodeType == NodeType.ROUTER ? NodeType.ROUTER : NodeType.CLIENT;
     this.simulation.nodes.push(node);
-  }
-
-  saveNode(node : Node) {
-    this.apiService.postNode(node).subscribe(
-      response => {
-        node.id = response.id;
-        node.name = response.name;
-        node.loopback = response.loopback;
-        node.actualX = response.actualX;
-        node.actualY = response.actualY;
-        node.previousX = response.previousX;
-        node.previousY = response.previousY;
-      },
-      error => {
-        alert("An error occured - Cannot add new node!");
-      }
-    );
   }
 
   addInterface(node : Node) {
@@ -168,65 +147,40 @@ export class WorkspaceComponent implements OnInit {
     );
   }
 
-  //Pobierz z serwera wszystkie węzły
-  getAllNodes() {
-    this.apiService.getAllNodes().subscribe(
-      response => {
-        this.simulation.nodes = response;
-      },
-      err => {
-        alert("An error occured when getting nodes from the server!")
-      }
-    );
-  }
-
-  private getAllLinks() {
-    this.apiService.getAllLinks().subscribe(
-      response => {
-        this.simulation.links = response;
-        this.drawLinksAndInterfaces();
-      },
-      err => {
-        alert("An error occured when getting links from the server!")
-      }
-    );
-  }
-
-  //Po każdym przeciągnięciu node'a uaktualniamy
-  //jego pozycję i wysyłamy do bazy
   updateParameters(event, node) {
     let element = event.source.getRootElement();
     let boundingClientRect = element.getBoundingClientRect();
     let parentPosition = this.getPosition(element);
+
+    let previousCoordinates = [node.actualX, node.actualY]
 
     node.previousX += node.actualX == undefined ? 0 : node.actualX;
     node.previousY += node.actualY == undefined ? 0 : node.actualY;
 
     node.actualX = boundingClientRect.x - parentPosition.left;
     node.actualY = boundingClientRect.y - parentPosition.top;
+
+    this.updateLinkPosition(previousCoordinates, node);
+  }
+
+  updateLinkPosition(previousCoordinates: any[], node : Node) {
+
+    for (let link of this.simulation.links) {
+      if (link.nodeA.actualX == previousCoordinates[0] && link.nodeA.actualY == previousCoordinates[1]) {
+        link.nodeA = node;
+      }
+      if (link.nodeB.actualX == previousCoordinates[0] && link.nodeB.actualY == previousCoordinates[1]) {
+        link.nodeB = node;
+      }
+    }
+    this.clearLinks();
+    this.drawLinksAndInterfaces();
   }
 
   //Czyści całe pole robocze
   resetWorkspace() {
     this.simulation = new Simulation();
     this.clearLinks();
-    // this.apiService.deleteAllLinks().subscribe(
-    //   response => {
-    //     this.simulation.links = response;
-    //     this.clearLinks();
-    //     this.apiService.deleteAllNodes().subscribe(
-    //       response => {
-    //         this.simulation.nodes = response;
-    //       },
-    //       error => {
-    //         alert("An error occured during workspace reset")
-    //       }
-    //     );
-    //   },
-    //   error => {
-    //     alert("An error occured during workspace reset")
-    //   }
-    // );
   }
 
   saveSimulation() {
