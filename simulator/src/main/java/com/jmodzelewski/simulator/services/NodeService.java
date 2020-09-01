@@ -91,7 +91,6 @@ public class NodeService {
         node.setType(nodeDTO.getType());
 
         node.setInterfaces(nodeDTO.getInterfaces());
-        node.setRoutingTable(nodeDTO.getRoutingTable());
 
         node.setActualX(nodeDTO.getActualX());
         node.setActualY(nodeDTO.getActualY());

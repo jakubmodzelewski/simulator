@@ -71,7 +71,7 @@ export class AuthService {
       .subscribe(data => {
       }, error => {
         throwError(error);
-      })
+      });
     this.localStorage.clear('authenticationToken');
     this.localStorage.clear('username');
     this.localStorage.clear('refreshToken');

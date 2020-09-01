@@ -3,10 +3,11 @@ import {Node} from "../model/Node";
 import {Link} from "../model/Link";
 import {ApiService} from "../../shared/api.service";
 import {NodeType} from "../model/node-type.enum";
-import {FormControl, FormGroup, Validators} from "@angular/forms";
+import {FormControl, FormGroup} from "@angular/forms";
 import {Simulation} from "../model/Simulation";
 import {AuthService} from "../../auth/shared/auth.service";
 import {ToastrService} from "ngx-toastr";
+import {MatTableDataSource} from "@angular/material/table";
 
 @Component({
   selector: 'app-workspace',
@@ -47,10 +48,14 @@ export class WorkspaceComponent implements OnInit {
 
   pingMode: boolean;
   sourceNode: Node;
+  pingInterfaces: string[];
+
+  dataSource = new MatTableDataSource();
 
   constructor(private apiService : ApiService, private authService: AuthService, private toastrService : ToastrService) {}
 
   ngOnInit() {
+    this.pingInterfaces = [];
     this.newRowForm = new FormGroup({
       network: new FormControl(''),
       next_hop: new FormControl(''),
@@ -105,7 +110,7 @@ export class WorkspaceComponent implements OnInit {
         this.drawingMode = false;
       }
     } else {
-      newInterface = "10.1." + (node.interfaces.length + 1) + "." + this.checkIfLinkExistsAndReturnNumber();
+      newInterface = "10.1." + (this.getInterfacesCount() + 1) + "." + this.checkIfLinkExistsAndReturnNumber();
       node.interfaces.push(newInterface);
     }
 
@@ -116,6 +121,14 @@ export class WorkspaceComponent implements OnInit {
       this.addLink(node, this.lastCreatedNode, newInterface, this.lastCreatedInterface);
       this.lastCreatedInterface = null;
     }
+  }
+
+  getInterfacesCount() {
+    let interfaceCounter = 0;
+    for(let node of this.simulation.nodes) {
+      interfaceCounter += node.interfaces.length;
+    }
+    return interfaceCounter;
   }
 
   addLink(nodeA : Node, nodeB : Node, interfaceA : string, interfaceB : string) {
@@ -152,7 +165,7 @@ export class WorkspaceComponent implements OnInit {
     let boundingClientRect = element.getBoundingClientRect();
     let parentPosition = this.getPosition(element);
 
-    let previousCoordinates = [node.actualX, node.actualY]
+    let previousCoordinates = [node.actualX, node.actualY];
 
     node.previousX += node.actualX == undefined ? 0 : node.actualX;
     node.previousY += node.actualY == undefined ? 0 : node.actualY;
@@ -164,13 +177,18 @@ export class WorkspaceComponent implements OnInit {
   }
 
   updateLinkPosition(previousCoordinates: any[], node : Node) {
-
     for (let link of this.simulation.links) {
       if (link.nodeA.actualX == previousCoordinates[0] && link.nodeA.actualY == previousCoordinates[1]) {
-        link.nodeA = node;
+        link.nodeA.previousX = node.previousX;
+        link.nodeA.previousY = node.previousY;
+        link.nodeA.actualX = node.actualX;
+        link.nodeA.actualY =  node.actualY;
       }
       if (link.nodeB.actualX == previousCoordinates[0] && link.nodeB.actualY == previousCoordinates[1]) {
-        link.nodeB = node;
+        link.nodeB.actualX = node.actualX;
+        link.nodeB.actualY =  node.actualY;
+        link.nodeB.previousX = node.previousX;
+        link.nodeB.previousY = node.previousY;
       }
     }
     this.clearLinks();
@@ -186,6 +204,7 @@ export class WorkspaceComponent implements OnInit {
   saveSimulation() {
     this.apiService.saveSimulation(this.authService.getUserName(), this.simulation).subscribe(
       response => {
+        this.ngOnInit();
         this.toastrService.success('Simulation saved successfully!');
       },
       error => {
@@ -232,9 +251,10 @@ export class WorkspaceComponent implements OnInit {
     ctx.clearRect(0, 0, c.width, c.height);
   }
 
-  select(id: string) {
-    for (let node of this.simulation.nodes) {
-      node.selected = node.id == id;
+  select(node : Node) {
+    for (let n of this.simulation.nodes) {
+      n.selected = n == node;
+      this.dataSource = new MatTableDataSource(this.getRoutingTableAsPairTable(node));
     }
   }
 
@@ -259,6 +279,10 @@ export class WorkspaceComponent implements OnInit {
       default:
         return '';
     }
+  }
+
+  isClient(node : Node) {
+    return node.type == NodeType.CLIENT;
   }
 
   //Wykonuje obliczenia niezbędne do prawidłowego
@@ -335,6 +359,11 @@ export class WorkspaceComponent implements OnInit {
     this.apiService.postRoutingTableRow(node.id, convMap).subscribe(
       response => {
         node = response;
+        this.newRowForm = new FormGroup({
+          network: new FormControl(''),
+          next_hop: new FormControl(''),
+        });
+        this.dataSource = new MatTableDataSource(this.getRoutingTableAsPairTable(node));
       },
       error => {
         alert("An error occured - Cannot update node parameters!");
@@ -369,6 +398,7 @@ export class WorkspaceComponent implements OnInit {
   }
 
   ping(destinationNode : Node) {
+    this.pingInterfaces = [];
     if (this.simulationStarted) {
       if (destinationNode.type != NodeType.CLIENT) {
         alert("Only client nodes are able to send messages!");
@@ -376,14 +406,18 @@ export class WorkspaceComponent implements OnInit {
         if (this.sourceNode == null) {
           this.sourceNode = destinationNode;
         } else {
-          let date = new Date();
-          this.consoleContent += "[" + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds() + "]" + " Checking " + this.sourceNode.name + " routing table...\n";
+          this.consoleContent += this.getDate() + " Checking " + this.sourceNode.name + " routing table...\n";
           this.checkPath(this.sourceNode, destinationNode.interfaces);
         }
       }
     } else {
       alert("Simulation must be started!");
     }
+  }
+
+  getDate() : string {
+    let date = new Date();
+    return "[" + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds() + "]";
   }
 
   checkPath(sourceNode : Node, interfaces : string[]) {
@@ -397,8 +431,8 @@ export class WorkspaceComponent implements OnInit {
         for (let node of this.simulation.nodes) {
           let newInterface = map.get(i);
           if (node.interfaces.includes(newInterface)) {
-            let date = new Date();
-            this.consoleContent += "[" + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds() + "]" + " Message forwarded from " + sourceNode.name + " to " + node.name + "\n";
+            this.consoleContent += this.getDate() + " Message forwarded from " + sourceNode.name + " to " + newInterface + "\n";
+            this.pingInterfaces.push(newInterface);
             this.checkPath(node, interfaces);
           }
         }
@@ -408,12 +442,24 @@ export class WorkspaceComponent implements OnInit {
 
   checkIfDestinationNodeReached(sourceNode : Node, destinationInterfaces : string[]) {
     if (sourceNode.interfaces.filter(value => destinationInterfaces.includes(value)).length > 0) {
-      let date = new Date();
-      this.consoleContent +=  "[" + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds() + "]" + " Destination reached.";
+      this.consoleContent +=  this.getDate() + " Destination reached.";
       this.consoleContent += this.pingingBack ? "\n" : " Checking " + sourceNode.name + " routing table...\n";
       return true;
     }
     return false;
+  }
+
+  getInterfaceColor(i: string) {
+    if (this.simulationStarted) {
+      if (this.pingInterfaces.includes(i)) {
+        return 'blue';
+      } else {
+        return 'green';
+      }
+    } else {
+      return 'red';
+    }
+
   }
 }
 
