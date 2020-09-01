@@ -1,5 +1,5 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-  <a class="navbar-brand" href="#">
+  <a class="navbar-brand" [routerLink]="isLoggedIn ? ['/workspace'] : ['/login']">
     <span class="text-warning">Simulator</span>
   </a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
@@ -18,18 +18,18 @@
   </div>
 
   <div class="flex-grow-1 float-right">
-    <div *ngIf="isLoggedIn" ngbDropdown class="float-right">
+    <div *ngIf="authService.isLoggedIn()" ngbDropdown class="float-right">
       <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
         <button (click)="goToUserProfile()" ngbDropdownItem>Profile</button>
         <button (click)="logout()" ngbDropdownItem>Logout</button>
       </div>
       <button class="userdetails" id="dropdownBasic1" ngbDropdownToggle>
         <img class="account-icon" src="assets/images/user.png">
-        {{username}}
+        {{authService.getUserName()}}
       </button>
     </div>
-    <div *ngIf="!isLoggedIn">
-      <a routerLink="/sign-up" class="float-right sign-up mr-2">Sign up</a>
+    <div *ngIf="!authService.isLoggedIn()">
+      <a routerLink="/signup" class="float-right sign-up mr-2">Sign up</a>
       <a routerLink="/login" class="float-right login mr-2">Login</a>
     </div>
   </div>

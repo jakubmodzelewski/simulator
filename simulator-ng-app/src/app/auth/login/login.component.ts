@@ -14,7 +14,7 @@ import {throwError} from "rxjs";
 export class LoginComponent implements OnInit {
 
   loginForm: FormGroup;
-  loginRequestPayload: LoginRequestPayload
+  loginRequestPayload: LoginRequestPayload;
   private isError: boolean;
 
   constructor(private authService : AuthService, private toastrService : ToastrService, private router : Router,  private activatedRoute: ActivatedRoute) {

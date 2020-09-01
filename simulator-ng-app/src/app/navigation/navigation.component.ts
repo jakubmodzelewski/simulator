@@ -27,6 +27,7 @@ export class NavigationComponent implements OnInit {
     this.authService.logout();
     this.isLoggedIn = false;
     this.router.navigateByUrl('');
+    this.ngOnInit();
   }
 
 }

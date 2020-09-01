@@ -40,7 +40,7 @@ const appRoutes :Routes = [
   },
   {
     path:'',
-    component:WorkspaceComponent,
+    component:LoginComponent,
     pathMatch:'full'
   },
   {
