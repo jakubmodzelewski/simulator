@@ -20,8 +20,6 @@ public class Node {
     @GeneratedValue(strategy = IDENTITY)
     Long id;
     String name;
-    String loopback;
-
     NodeType type;
 
     @ElementCollection
@@ -40,3 +38,4 @@ public class Node {
     int previousX;
     int previousY;
 }
+

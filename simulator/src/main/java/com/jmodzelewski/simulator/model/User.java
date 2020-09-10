@@ -28,7 +28,6 @@ public class User {
     private String email;
 
     @ElementCollection
-    @CollectionTable(name = "simulations")
     @Column(name = "simulation")
     List<Simulation> simulations;
 

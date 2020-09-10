@@ -12,12 +12,13 @@ export class ApiService {
   private activeSimulationSource = new BehaviorSubject('');
   currentId = this.activeSimulationSource.asObservable();
 
-  private NODE_URL = 'http://localhost:8080/workspace/node';
-  private LINK_URL = 'http://localhost:8080/workspace/link';
-  private ALL_NODES_URL = 'http://localhost:8080/workspace/node/all';
-  private ALL_LINKS_URL = 'http://localhost:8080/workspace/link/all';
-  private SIMULATIONS_URL = 'http://localhost:8080/api/auth/simulations';
-  private SIMULATION_URL = 'http://localhost:8080/api/auth/simulation';
+  private BASE_URL = window['cfgApiBaseUrl'];
+  private NODE_URL = this.BASE_URL + '/workspace/node';
+  private LINK_URL = this.BASE_URL + '/workspace/link';
+  private ALL_NODES_URL = this.BASE_URL + '/workspace/node/all';
+  private ALL_LINKS_URL = this.BASE_URL + '/workspace/link/all';
+  private SIMULATIONS_URL = this.BASE_URL + '/api/auth/simulations';
+  private SIMULATION_URL = this.BASE_URL + '/api/auth/simulation';
 
   constructor(private httpClient : HttpClient) { }
 

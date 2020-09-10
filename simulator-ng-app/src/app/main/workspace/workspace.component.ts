@@ -71,6 +71,10 @@ export class WorkspaceComponent implements OnInit {
           this.apiService.getSimulation(this.simulation.id).subscribe(
             response => {
               this.simulation = response;
+              for (let node of this.simulation.nodes) {
+                node.previousX = node.actualX;
+                node.previousY = node.actualY;
+              }
               this.drawLinksAndInterfaces();
             },
             err => {
@@ -137,29 +141,6 @@ export class WorkspaceComponent implements OnInit {
     this.drawLinksAndInterfaces();
   }
 
-  saveLink(link) {
-    this.apiService.postLink(link).subscribe(
-      response => {
-        link.id = response.id;
-        link.nodeA = response.nodeA;
-        link.nodeB = response.nodeB;
-
-        link.xA = response.xA;
-        link.yA = response.yA;
-        link.xB = response.xB;
-        link.yB = response.yB;
-
-        link.interfaceA = response.interfaceA;
-        link.interfaceB = response.interfaceB;
-
-        this.simulation.links.push(link);
-      },
-      error => {
-        alert("An error occured - Cannot add new link!");
-      }
-    );
-  }
-
   updateParameters(event, node) {
     let element = event.source.getRootElement();
     let boundingClientRect = element.getBoundingClientRect();
@@ -167,11 +148,8 @@ export class WorkspaceComponent implements OnInit {
 
     let previousCoordinates = [node.actualX, node.actualY];
 
-    node.previousX += node.actualX == undefined ? 0 : node.actualX;
-    node.previousY += node.actualY == undefined ? 0 : node.actualY;
-
-    node.actualX = boundingClientRect.x - parentPosition.left;
-    node.actualY = boundingClientRect.y - parentPosition.top;
+    node.actualX = boundingClientRect.x - parentPosition.left + node.previousX;
+    node.actualY = boundingClientRect.y - parentPosition.top + node.previousY;
 
     this.updateLinkPosition(previousCoordinates, node);
   }
@@ -234,10 +212,10 @@ export class WorkspaceComponent implements OnInit {
       ctx.strokeStyle="gray";
 
       [link.xA, link.yA, link.xB, link.yB] = this.calculateLinkDrawpoint(
-        link.nodeA.actualX + link.nodeA.previousX + this.HALF_IMAGE_LENGTH,
-        link.nodeA.actualY + link.nodeA.previousY + this.HALF_IMAGE_LENGTH,
-        link.nodeB.actualX + link.nodeB.previousX + this.HALF_IMAGE_LENGTH,
-        link.nodeB.actualY + link.nodeB.previousY + this.HALF_IMAGE_LENGTH,
+        link.nodeA.actualX + this.HALF_IMAGE_LENGTH,
+        link.nodeA.actualY + this.HALF_IMAGE_LENGTH,
+        link.nodeB.actualX + this.HALF_IMAGE_LENGTH,
+        link.nodeB.actualY + this.HALF_IMAGE_LENGTH,
         link.nodeA.type, link.nodeB.type);
       ctx.moveTo(link.xA, link.yA);
       ctx.lineTo(link.xB, link.yB);

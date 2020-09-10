@@ -8,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.net.InetAddress;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -36,7 +35,6 @@ public class NodeService {
                 break;
         }
 
-        nodeDTO.setLoopback(InetAddress.getLoopbackAddress().getHostAddress());
         return nodeDTO;
     }
 
@@ -87,7 +85,6 @@ public class NodeService {
             node.setId(nodeDTO.getId());
         }
         node.setName(nodeDTO.getName());
-        node.setLoopback(nodeDTO.getLoopback());
         node.setType(nodeDTO.getType());
 
         node.setInterfaces(nodeDTO.getInterfaces());
@@ -105,7 +102,6 @@ public class NodeService {
 
         nodeDTO.setId(node.getId());
         nodeDTO.setName(node.getName());
-        nodeDTO.setLoopback(node.getLoopback());
         nodeDTO.setType(node.getType());
 
         nodeDTO.setInterfaces(node.getInterfaces());

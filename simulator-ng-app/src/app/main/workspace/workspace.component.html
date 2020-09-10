@@ -1,7 +1,7 @@
 <mat-sidenav-container>
 
   <!--  Left side bar-->
-  <mat-sidenav mode="side" [(opened)]="leftSideBarOpened" position="start" (click)="unselect();">
+  <mat-sidenav mode="side" [(opened)]="leftSideBarOpened" position="start" (click)="unselect(); loading=false;">
     <button type="button"
             class="btn btn-success"
             (click)="simulationStarted = true"
@@ -67,18 +67,18 @@
       <span class="dot" matTooltip="{{link.interfaceB}}"
             [ngStyle]="{marginLeft: link.xB - 7 + 'px', marginTop: link.yB - 7 + 'px', backgroundColor: getInterfaceColor(link.interfaceB)}"></span>
     </a>
-    <div class="workspace" (click)="loading=false;">
+    <div class="workspace" (click)="loading = false;">
       <a *ngFor="let node of simulation.nodes">
         <img [ngClass]="{'selected': node.selected, 'drawing-mode': drawingMode, 'ping-mode': pingMode && isClient(node)}"
              class="node"
              [src]=getImageSource(node.type)
              cdkDrag cdkDragBoundary=".workspace"
+             (cdkDragStarted)="loading = false;"
              (click)="select(node); drawingMode ? addInterface(node) : {}; pingMode ? ping(node) : {}"
              (cdkDragEnded)="updateParameters($event, node)"
-             [style.left.px]="loading ? node.actualX + node.previousX : {}"
-             [style.top.px]="loading ? node.actualY + node.previousY : {}">
+             [style.left.px]="loading ? node.actualX : {}"
+             [style.top.px]="loading ? node.actualY : {}">
       </a>
-      <!--    TODO: Dostosować rozmiar do mat-sidenav-content-->
       <canvas id="myCanvas" width="650" height="650" (click)="unselect();"></canvas>
     </div>
 

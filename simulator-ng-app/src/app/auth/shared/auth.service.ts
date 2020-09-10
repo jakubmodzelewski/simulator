@@ -12,6 +12,8 @@ import {LocalStorageService} from "ngx-webstorage";
 })
 export class AuthService {
 
+  private BASE_URL = window['cfgApiBaseUrl'];
+
   constructor(private httpClient : HttpClient, private localStorage : LocalStorageService) { }
 
   refreshTokenPayload = {
@@ -20,11 +22,11 @@ export class AuthService {
   }
 
   signup(signupRequestPayload : SignupRequestPayload) : Observable<any> {
-    return this.httpClient.post('http://localhost:8080/api/auth/signup', signupRequestPayload, {responseType : "text"});
+    return this.httpClient.post(this.BASE_URL + '/api/auth/signup', signupRequestPayload, {responseType : "text"});
   }
 
   login(loginRequestPayload : LoginRequestPayload) : Observable<boolean> {
-    return this.httpClient.post<LoginResponsePayload>('http://localhost:8080/api/auth/login', loginRequestPayload)
+    return this.httpClient.post<LoginResponsePayload>(this.BASE_URL + '/api/auth/login', loginRequestPayload)
       .pipe(map(data => {
         this.localStorage.store('authenticationToken', data.authenticationToken);
         this.localStorage.store('username', data.username);
@@ -41,7 +43,7 @@ export class AuthService {
   }
 
   refreshToken() {
-    return this.httpClient.post<LoginResponsePayload>('http://localhost:8080/api/auth/refresh/token',
+    return this.httpClient.post<LoginResponsePayload>(this.BASE_URL + '/api/auth/refresh/token',
       this.refreshTokenPayload)
       .pipe(tap(response => {
         this.localStorage.clear('authenticationToken');
@@ -66,7 +68,7 @@ export class AuthService {
   }
 
   logout() {
-    this.httpClient.post('http://localhost:8080/api/auth/logout', this.refreshTokenPayload,
+    this.httpClient.post(this.BASE_URL + '/api/auth/logout', this.refreshTokenPayload,
       { responseType: 'text' })
       .subscribe(data => {
       }, error => {

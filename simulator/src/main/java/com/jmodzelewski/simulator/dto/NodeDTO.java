@@ -13,7 +13,6 @@ import java.util.Map;
 public class NodeDTO {
     Long id;
     String name;
-    String loopback;
 
     NodeType type;
 

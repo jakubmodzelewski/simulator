@@ -25,3 +25,4 @@ public class Simulation {
     @ManyToMany(cascade= {CascadeType.REMOVE})
     List<Link> links = new LinkedList<>();
 }
+

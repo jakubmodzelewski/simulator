@@ -4,7 +4,6 @@ export class Node {
 
   id: string;
   name: string;
-  loopback: string;
 
   interfaces: string[];
   routingTable : Map<string, string>;
