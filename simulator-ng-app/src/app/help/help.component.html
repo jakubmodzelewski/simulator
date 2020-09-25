@@ -1,1 +1,97 @@
-<p>help works!</p>
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>How to use it?</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <p>
+      This simulator is really easy to use. This is a step-by-step guide that will show you how to build your first, simple network. If you need some general informations about IP protocol, you will find it here:
+    </p>
+    <button type="button" class="btn btn-info" (click)="navigate()"> IP Protocol</button>
+  </mat-card-content>
+</mat-card>
+
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>Buttons</mat-card-title>
+  </mat-card-header>
+  <mat-grid-list cols="3" rowHeight="200px">
+    <mat-grid-tile class="tile green">
+          <button type="button"
+                  class="btn btn-success tilebutton"
+          ><i class="fa fa-play"></i> Start
+          </button>
+          <p>
+            This button can be used to start simulation after you finish configuration.
+          </p>
+    </mat-grid-tile>
+    <mat-grid-tile class="tile red">
+          <button type="button"
+                  class="btn btn-danger tilebutton"
+          ><i class="fa fa-stop"></i> Stop
+          </button>
+          <p>
+            This button stops simulation and enables back building network.
+          </p>
+    </mat-grid-tile>
+    <mat-grid-tile class="tile yellow">
+          <button type="button"
+                  class="btn btn-warning tilebutton"
+          ><i class="fa fa-repeat"></i> New Simulation
+          </button>
+          <p>
+            This button creates a new simulation. It does not save your current workspace state so be careful, because you will not be able to bring back unsaved changes.
+          </p>
+    </mat-grid-tile>
+    <mat-grid-tile class="tile blue">
+          <button type="button"
+                  class="btn btn-info tilebutton"
+          ><i class="fa fa-save"></i> Save
+          </button>
+          <p>
+            You can save your simulation using this button. Your saved simulation will appear in your account profile.
+          </p>
+    </mat-grid-tile>
+    <mat-grid-tile class="tile blue">
+          <button type="button"
+                  class="btn btn-info tilebutton"
+                  [ngStyle]="{marginLeft:25 + '%'}"
+          ><i class="fa fa-plus"></i> Router
+          </button>
+          <button type="button"
+                  class="btn btn-info tilebutton"
+                  [ngStyle]="{marginRight:25 + '%'}"
+          ><i class="fa fa-plus"></i> Client
+          </button>
+          <p>
+            Those two buttons can be used to add router and client node to the workspace.
+          </p>
+    </mat-grid-tile>
+    <mat-grid-tile class="tile blue">
+          <button type="button"
+                  class="btn btn-info tilebutton"
+          ><i class="fa fa-plus"></i> Link
+          </button>
+          <p>
+            Link button turns on a drawing mode. It means that you can create links between nodes. To do it, click once on any two nodes in the workspace.
+          </p>
+    </mat-grid-tile>
+    <mat-grid-tile class="tile green">
+          <button type="button"
+                  class="btn btn-success btn-lg tilebutton"
+          ><i class="fa fa-angle-double-right"></i> Ping
+          </button>
+          <p>
+            This button enables pinging nodes. After clicking Ping button, click source node and then click destination node.
+          </p>
+    </mat-grid-tile>
+    <mat-grid-tile class="tile red">
+          <button type="button"
+                  class="btn btn-danger btn-lg tilebutton"
+          ><i class="fa fa-trash"></i> Delete
+          </button>
+          <p>
+            This button deletes last chosen node.
+          </p>
+    </mat-grid-tile>
+  </mat-grid-list>
+</mat-card>

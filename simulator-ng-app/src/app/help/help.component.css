@@ -1,0 +1,24 @@
+.tilebutton {
+  position:absolute;
+  top:5%;
+}
+
+.tile {
+
+}
+
+.tile.green {
+  background-color: lightgreen;
+}
+
+.tile.blue {
+  background-color: lightblue;
+}
+
+.tile.yellow {
+  background-color: lightyellow;
+}
+
+.tile.red {
+  background-color: lightpink;
+}
